@@ -1,0 +1,37 @@
+{
+	"name": "Destin_1",
+	"properties": {
+		"description": "Test",
+		"linkedServiceName": {
+			"referenceName": "BazaSQL1_UUsluga",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "pk",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nodeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "propertyEditorAlias",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dbType",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "witekt27_esong_user",
+			"table": "cmsDataType_old"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

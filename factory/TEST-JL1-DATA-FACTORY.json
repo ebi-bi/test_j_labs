@@ -1,0 +1,9 @@
+{
+	"name": "TEST-JL1-DATA-FACTORY",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "367b6070-8f9c-4082-b39c-51e473d01d5a",
+		"tenantId": "b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
+	}
+}
