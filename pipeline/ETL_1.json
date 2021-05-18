@@ -4,7 +4,7 @@
 		"description": "Pierwszy test",
 		"activities": [
 			{
-				"name": "Prosta kopia tabeli",
+				"name": "Prosta kopia tabeli jednej tabeli",
 				"description": "Kopia z truncate",
 				"type": "Copy",
 				"dependsOn": [],
