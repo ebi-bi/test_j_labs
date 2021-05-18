@@ -1,0 +1,49 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nazwa fabryki danych",
+			"defaultValue": "TEST-JL1-DATA-FACTORY"
+		},
+		"BazaSQL1_UUsluga_connectionString": {
+			"type": "secureString",
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „BazaSQL1_UUsluga”"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "Identyfikator URI konta magazynu zawierającego połączone szablony usługi ARM"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Token SAS dla konta magazynu zawierającego połączone szablony usługi ARM"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "TEST-JL1-DATA-FACTORY_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"BazaSQL1_UUsluga_connectionString": {
+						"value": "[parameters('BazaSQL1_UUsluga_connectionString')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
