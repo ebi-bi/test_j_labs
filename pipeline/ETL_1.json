@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Prosta kopia tabeli",
+				"description": "Kopia z truncate",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
