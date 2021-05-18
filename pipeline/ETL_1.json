@@ -93,7 +93,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Destin_1",
+						"referenceName": "Destin_1_tst",
 						"type": "DatasetReference"
 					}
 				]
