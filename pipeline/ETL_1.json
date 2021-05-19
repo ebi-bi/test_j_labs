@@ -4,8 +4,7 @@
 		"description": "Pierwszy test",
 		"activities": [
 			{
-				"name": "Prosta kopia tabeli jednej tabeli",
-				"description": "Kopia z truncate",
+				"name": "Prosta kopia tabeli",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -101,7 +100,7 @@
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2021-05-18T15:49:20Z"
+		"lastPublishTime": "2021-05-18T16:22:50Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
