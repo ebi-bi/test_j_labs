@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Rentownosc_i_eksport_do_TCV",
+				"description": "Test",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
