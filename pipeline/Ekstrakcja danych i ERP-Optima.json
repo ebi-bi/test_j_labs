@@ -1,6 +1,7 @@
 {
 	"name": "Ekstrakcja danych i ERP-Optima",
 	"properties": {
+		"description": "Na razie wait",
 		"activities": [
 			{
 				"name": "Wait1",
