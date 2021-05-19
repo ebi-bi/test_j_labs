@@ -1,0 +1,6 @@
+{
+	"name": "SQLIntegracjaTEST",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
