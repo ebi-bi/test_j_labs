@@ -1,6 +1,17 @@
 {
 	"name": "Ekstrakcja danych i ERP-Optima",
 	"properties": {
+		"activities": [
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 10
+				}
+			}
+		],
 		"annotations": []
 	}
 }
