@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "Rentownosc_i_eksport_do_TCV",
-				"description": "Test",
+				"description": "Test etla",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
