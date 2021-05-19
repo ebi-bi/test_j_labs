@@ -7,10 +7,6 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"BazaSQL1_UUsluga_connectionString": {
-			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „BazaSQL1_UUsluga”"
-		},
 		"J_LABS_BI_TEST_connectionString": {
 			"type": "secureString",
 			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
@@ -90,20 +86,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI_TEST')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BazaSQL1_UUsluga')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Test",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('BazaSQL1_UUsluga_connectionString')]"
-				}
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/J_LABS_BI_TEST')]",

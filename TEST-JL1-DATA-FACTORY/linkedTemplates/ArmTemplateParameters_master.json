@@ -5,9 +5,6 @@
 		"factoryName": {
 			"value": "TEST-JL1-DATA-FACTORY"
 		},
-		"BazaSQL1_UUsluga_connectionString": {
-			"value": ""
-		},
 		"J_LABS_BI_TEST_connectionString": {
 			"value": ""
 		},

@@ -7,10 +7,6 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"BazaSQL1_UUsluga_connectionString": {
-			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „BazaSQL1_UUsluga”"
-		},
 		"J_LABS_BI_TEST_connectionString": {
 			"type": "secureString",
 			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
@@ -49,9 +45,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"BazaSQL1_UUsluga_connectionString": {
-						"value": "[parameters('BazaSQL1_UUsluga_connectionString')]"
 					},
 					"J_LABS_BI_TEST_connectionString": {
 						"value": "[parameters('J_LABS_BI_TEST_connectionString')]"
