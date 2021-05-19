@@ -7,9 +7,17 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"BazaSQL1_UUsluga_connectionString": {
+		"J_LABS_BI_TEST_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „BazaSQL1_UUsluga”"
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
+		},
+		"J_LABS_BI_TEST_password": {
+			"type": "secureString",
+			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI_TEST”"
+		},
+		"J_LABS_BI_TEST_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "J-LABS\\witold.toczek.ext"
 		}
 	},
 	"variables": {
@@ -17,15 +25,44 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ETL_1')]",
+			"name": "[concat(parameters('factoryName'), '/MAIN_ETL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Pierwszy test",
+				"description": "Główny produkcyjny ETL",
 				"activities": [
 					{
-						"name": "Prosta kopia tabeli",
-						"type": "Copy",
+						"name": "Rentownosc_i_eksport_do_TCV",
+						"description": "Test",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Obliczanie_rentownosci",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Obliczanie_rentownosci')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Wywołanie procedury wyliczającej rentowność specjalistów",
+				"activities": [
+					{
+						"name": "Rentownosc_specjalistow",
+						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -36,190 +73,44 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE [witekt27_esong_user].[cmsDataType_old]"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "pk",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "pk",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "nodeId",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "nodeId",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "propertyEditorAlias",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "propertyEditorAlias",
-											"type": "String",
-											"physicalType": "nvarchar"
-										}
-									},
-									{
-										"source": {
-											"name": "dbType",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "dbType",
-											"type": "String",
-											"physicalType": "nvarchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
+							"storedProcedureName": "[[dbo].[BI_Specjalisci_stop]"
 						},
-						"inputs": [
-							{
-								"referenceName": "source_1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Destin_1_tst",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI_TEST",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
-				"annotations": [],
-				"lastPublishTime": "2021-05-18T15:49:20Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/source_1')]",
-				"[concat(variables('factoryId'), '/datasets/Destin_1_tst')]"
+				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI_TEST')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Destin_1_tst')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Test",
-				"linkedServiceName": {
-					"referenceName": "BazaSQL1_UUsluga",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "pk",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "nodeId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "propertyEditorAlias",
-						"type": "nvarchar"
-					},
-					{
-						"name": "dbType",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "witekt27_esong_user",
-					"table": "cmsDataType_old"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BazaSQL1_UUsluga')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/source_1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BazaSQL1_UUsluga",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "pk",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "nodeId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "contentType",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "witekt27_esong_user",
-					"table": "cmsDataType"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BazaSQL1_UUsluga')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BazaSQL1_UUsluga')]",
+			"name": "[concat(parameters('factoryName'), '/J_LABS_BI_TEST')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Test",
+				"description": "Dostęp do bazy danych BI serwera testowego",
 				"annotations": [],
 				"type": "SqlServer",
 				"typeProperties": {
-					"connectionString": "[parameters('BazaSQL1_UUsluga_connectionString')]"
+					"connectionString": "[parameters('J_LABS_BI_TEST_connectionString')]",
+					"userName": "[parameters('J_LABS_BI_TEST_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('J_LABS_BI_TEST_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "SQLIntegracjaTEST",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/trigger1')]",
@@ -239,6 +130,17 @@
 						"timeZone": "UTC"
 					}
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "Dostęp do środowiska testowego",
+				"typeProperties": {}
 			},
 			"dependsOn": []
 		}

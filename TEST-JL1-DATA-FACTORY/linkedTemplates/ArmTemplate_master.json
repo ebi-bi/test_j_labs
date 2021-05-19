@@ -7,9 +7,17 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"BazaSQL1_UUsluga_connectionString": {
+		"J_LABS_BI_TEST_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „BazaSQL1_UUsluga”"
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
+		},
+		"J_LABS_BI_TEST_password": {
+			"type": "secureString",
+			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI_TEST”"
+		},
+		"J_LABS_BI_TEST_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "J-LABS\\witold.toczek.ext"
 		},
 		"containerUri": {
 			"type": "string",
@@ -38,8 +46,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"BazaSQL1_UUsluga_connectionString": {
-						"value": "[parameters('BazaSQL1_UUsluga_connectionString')]"
+					"J_LABS_BI_TEST_connectionString": {
+						"value": "[parameters('J_LABS_BI_TEST_connectionString')]"
+					},
+					"J_LABS_BI_TEST_password": {
+						"value": "[parameters('J_LABS_BI_TEST_password')]"
+					},
+					"J_LABS_BI_TEST_properties_typeProperties_userName": {
+						"value": "[parameters('J_LABS_BI_TEST_properties_typeProperties_userName')]"
 					}
 				}
 			},
