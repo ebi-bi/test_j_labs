@@ -1,0 +1,22 @@
+{
+	"name": "MAIN_ETL",
+	"properties": {
+		"description": "Główny produkcyjny ETL",
+		"activities": [
+			{
+				"name": "Rentownosc_i_eksport_do_TCV",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Obliczanie_rentownosci",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
