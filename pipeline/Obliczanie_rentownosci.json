@@ -16,7 +16,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[BI_Specjalisci_stop]"
+					"storedProcedureName": "[dbo].[BI_RentownoscSpecjalistow_TEST]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
