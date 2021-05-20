@@ -25,11 +25,11 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Ekstrakcja danych i ERP-Optima')]",
+			"name": "[concat(parameters('factoryName'), '/Ekstrakcja danych z ERP-Optima')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Na razie wait",
+				"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
 				"activities": [
 					{
 						"name": "Wait1",
@@ -85,45 +85,19 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_Specjalisci_stop]"
+							"storedProcedureName": "[[dbo].[BI_RentownoscSpecjalistow_TEST]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ss",
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2021-05-18T15:45:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"description": "Dostęp do środowiska testowego",
-				"typeProperties": {}
-			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
@@ -179,6 +153,38 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "ss",
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2021-05-18T15:45:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "Dostęp do środowiska testowego",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		}
 	]
 }
