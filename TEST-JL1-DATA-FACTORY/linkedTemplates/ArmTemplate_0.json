@@ -7,15 +7,15 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"J_LABS_BI_TEST_connectionString": {
+		"J_LABS_BI_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
 		},
-		"J_LABS_BI_TEST_password": {
+		"J_LABS_BI_password": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI_TEST”"
+			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
 		},
-		"J_LABS_BI_TEST_properties_typeProperties_userName": {
+		"J_LABS_BI_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "J-LABS\\witold.toczek.ext"
 		}
@@ -66,6 +66,34 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Wywołanie procedury wyliczającej rentowność specjalistów",
+				"activities": [
+					{
+						"name": "Rentownosc_specjalistow",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[BI_Specjalisci_stop]"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/trigger1')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -98,19 +126,19 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/J_LABS_BI_TEST')]",
+			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Dostęp do bazy danych BI serwera testowego",
+				"description": "Dostęp do bazy SQL -> J_LABS_BI",
 				"annotations": [],
 				"type": "SqlServer",
 				"typeProperties": {
-					"connectionString": "[parameters('J_LABS_BI_TEST_connectionString')]",
-					"userName": "[parameters('J_LABS_BI_TEST_properties_typeProperties_userName')]",
+					"connectionString": "[parameters('J_LABS_BI_connectionString')]",
+					"userName": "[parameters('J_LABS_BI_properties_typeProperties_userName')]",
 					"password": {
 						"type": "SecureString",
-						"value": "[parameters('J_LABS_BI_TEST_password')]"
+						"value": "[parameters('J_LABS_BI_password')]"
 					}
 				},
 				"connectVia": {
@@ -120,40 +148,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Wywołanie procedury wyliczającej rentowność specjalistów",
-				"activities": [
-					{
-						"name": "Rentownosc_specjalistow",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_Specjalisci_stop]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI_TEST",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI_TEST')]"
 			]
 		}
 	]

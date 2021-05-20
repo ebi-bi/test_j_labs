@@ -7,15 +7,15 @@
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
-		"J_LABS_BI_TEST_connectionString": {
+		"J_LABS_BI_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI_TEST”"
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
 		},
-		"J_LABS_BI_TEST_password": {
+		"J_LABS_BI_password": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI_TEST”"
+			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
 		},
-		"J_LABS_BI_TEST_properties_typeProperties_userName": {
+		"J_LABS_BI_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "J-LABS\\witold.toczek.ext"
 		}
@@ -86,43 +86,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"storedProcedureName": "[[dbo].[BI_Specjalisci_stop]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI_TEST",
-							"type": "LinkedServiceReference"
 						}
 					}
 				],
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI_TEST')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/J_LABS_BI_TEST')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Dostęp do bazy danych BI serwera testowego",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('J_LABS_BI_TEST_connectionString')]",
-					"userName": "[parameters('J_LABS_BI_TEST_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('J_LABS_BI_TEST_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "SQLIntegracjaTEST",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/trigger1')]",
@@ -155,6 +124,31 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Dostęp do bazy SQL -> J_LABS_BI",
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('J_LABS_BI_connectionString')]",
+					"userName": "[parameters('J_LABS_BI_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('J_LABS_BI_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "SQLIntegracjaTEST",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
+			]
 		}
 	]
 }

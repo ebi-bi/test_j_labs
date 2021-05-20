@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "TEST-JL1-DATA-FACTORY"
 		},
-		"J_LABS_BI_TEST_connectionString": {
+		"J_LABS_BI_connectionString": {
 			"value": ""
 		},
-		"J_LABS_BI_TEST_password": {
+		"J_LABS_BI_password": {
 			"value": ""
 		},
-		"J_LABS_BI_TEST_properties_typeProperties_userName": {
+		"J_LABS_BI_properties_typeProperties_userName": {
 			"value": "J-LABS\\witold.toczek.ext"
 		},
 		"containerUri": {
