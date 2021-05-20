@@ -1,7 +1,7 @@
 {
-	"name": "Ekstrakcja danych i ERP-Optima",
+	"name": "Ekstrakcja danych z ERP-Optima",
 	"properties": {
-		"description": "Na razie wait",
+		"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
 		"activities": [
 			{
 				"name": "Wait1",
