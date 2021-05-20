@@ -1,0 +1,18 @@
+{
+	"name": "J_LABS_BI",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Dostęp do bazy SQL -> J_LABS_BI",
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=TEST-OPTIMA-RDS\\OPTIMA;initial catalog=J_LABS_BI",
+			"userName": "J-LABS\\witold.toczek.ext",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI5MDdjNWYzMC1mNDVjLTRmYmItOTNkMS03ZDhiNDYyNzA5M2UiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SQLIntegracjaTEST",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
