@@ -1,15 +1,26 @@
 {
-	"name": "Ekstrakcja danych z ERP-Optima",
+	"name": "Okresy obrachunkowe oraz Finanse ERP",
 	"properties": {
 		"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
 		"activities": [
 			{
-				"name": "Wait1",
-				"type": "Wait",
+				"name": "Ekstrakcja danych z ERP-Optima",
+				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 10
+					"storedProcedureName": "[dbo].[BI_JOB_LOAD_ERP]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
