@@ -17,10 +17,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[BI_Specjalisci_stop]"
-				},
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI_TEST",
-					"type": "LinkedServiceReference"
 				}
 			}
 		],
