@@ -49,7 +49,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABEL  SH_Okres_obrachunkowy"
+						"preCopyScript": "TRUNCATE TABLE SH_Okres_obrachunkowy"
 					},
 					"enableStaging": false,
 					"translator": {
