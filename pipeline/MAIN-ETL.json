@@ -10,8 +10,47 @@
 				"typeProperties": {
 					"waitTimeInSeconds": 5
 				}
+			},
+			{
+				"name": "dzien",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "currentDay",
+					"value": ""
+				}
+			},
+			{
+				"name": "DaneRCPOd",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "dzien",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
 			}
 		],
+		"variables": {
+			"dzienTygodnia": {
+				"type": "Boolean",
+				"defaultValue": true
+			},
+			"currentDay": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
