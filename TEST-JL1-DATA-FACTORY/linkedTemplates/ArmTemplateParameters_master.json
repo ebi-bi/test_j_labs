@@ -11,8 +11,14 @@
 		"J_LABS_BI_password": {
 			"value": ""
 		},
+		"SharePoint_JLabs_servicePrincipalKey": {
+			"value": ""
+		},
 		"J_LABS_BI_properties_typeProperties_userName": {
 			"value": "J-LABS\\witold.toczek.ext"
+		},
+		"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
+			"value": "8f530e7c-b811-4d45-a09f-dd3c20139862"
 		},
 		"containerUri": {
 			"value": ""

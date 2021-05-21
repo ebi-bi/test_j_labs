@@ -15,9 +15,17 @@
 			"type": "secureString",
 			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
 		},
+		"SharePoint_JLabs_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs”"
+		},
 		"J_LABS_BI_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "J-LABS\\witold.toczek.ext"
+		},
+		"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
 		},
 		"containerUri": {
 			"type": "string",
@@ -46,11 +54,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"SharePoint_JLabs_servicePrincipalKey": {
+						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
+					},
 					"J_LABS_BI_connectionString": {
 						"value": "[parameters('J_LABS_BI_connectionString')]"
 					},
 					"J_LABS_BI_password": {
 						"value": "[parameters('J_LABS_BI_password')]"
+					},
+					"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('SharePoint_JLabs_properties_typeProperties_servicePrincipalId')]"
 					},
 					"J_LABS_BI_properties_typeProperties_userName": {
 						"value": "[parameters('J_LABS_BI_properties_typeProperties_userName')]"
