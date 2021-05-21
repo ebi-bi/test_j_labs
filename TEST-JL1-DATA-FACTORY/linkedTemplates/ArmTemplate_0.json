@@ -179,6 +179,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Klienci_SH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Klienci"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -401,6 +424,41 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/temp_map_klienci')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane pomocnicze"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ERP_ID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "tmp",
+					"table": "map_sh_Klienci"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MAIN-ETL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -475,7 +533,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "OkresyObrachunkowe_copy",
+								"activity": "mapowenie klientow",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -601,6 +659,83 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "mapowenie klientow",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "OkresyObrachunkowe_copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE [tmp].[map_sh_Klienci]"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "IDERP",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ERP_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Klienci_SH",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "temp_map_klienci",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"annotations": []
@@ -608,7 +743,9 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]",
 				"[concat(variables('factoryId'), '/datasets/Okresy_obrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]"
+				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]",
+				"[concat(variables('factoryId'), '/datasets/Klienci_SH')]",
+				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]"
 			]
 		},
 		{
