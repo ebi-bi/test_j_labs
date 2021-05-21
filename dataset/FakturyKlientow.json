@@ -1,0 +1,19 @@
+{
+	"name": "FakturyKlientow",
+	"properties": {
+		"description": "Dodatkowe faktury klientów",
+		"linkedServiceName": {
+			"referenceName": "SharePoint_JLabs",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane z list Share Point"
+		},
+		"annotations": [],
+		"type": "SharePointOnlineListResource",
+		"schema": [],
+		"typeProperties": {
+			"listName": "Faktury_sprzedazy"
+		}
+	}
+}
