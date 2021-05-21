@@ -6,7 +6,14 @@
 			{
 				"name": "Ekstrakcja danych z ERP-Optima",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "OkresyObrachunkowe_copy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
