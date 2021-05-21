@@ -207,6 +207,154 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Faktury spprzedazy SH - Copy",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Title",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Nr_FV",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ComplianceAssetId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ID_uslugi",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Ilość",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Ilosc",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "JMValue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "JM",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CenaJednostkowa",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Cena",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 12
+								}
+							},
+							{
+								"source": {
+									"name": "WartośćFvNetto",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Wartosc",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 12
+								}
+							},
+							{
+								"source": {
+									"name": "KlientId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SH_Klient_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "OkresId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SH_Okres_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "NazwaUsługiId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SH_Usluga_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "FakturySprzedazy",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SH_Faktury_Klientow",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
