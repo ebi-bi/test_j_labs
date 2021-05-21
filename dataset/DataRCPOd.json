@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Dane_pomocnicze"
+			"name": "Dane pomocnicze"
 		},
 		"annotations": [],
 		"type": "SqlServerTable",

@@ -22,6 +22,166 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "SH_Faktury_Sprzedazy",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"sqlWriterStoredProcedureName": "[dbo].[BI_GenerowanieWartosciBilansu]"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ContentTypeID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Okres",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Title",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Nr_FV",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ComplianceAssetId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ID_uslugi",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "KlientId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ID_ERP",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "JMValue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Ilosc",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Ilość",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "JM",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CenaJednostkowa",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Cena",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 12
+								}
+							},
+							{
+								"source": {
+									"name": "WartośćFvNetto",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Wartosc",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 12
+								}
+							},
+							{
+								"source": {
+									"name": "NazwaUsługiId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "DataDokumentu",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "OkresId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "Data_ladowania",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "FakturyKlientow",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SH_Faktury_Klientow",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []

@@ -1,0 +1,69 @@
+{
+	"name": "SH_Faktury_Klientow",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane w bazie BI SQL"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Okres",
+				"type": "nchar"
+			},
+			{
+				"name": "Nr_FV",
+				"type": "nchar"
+			},
+			{
+				"name": "ID_uslugi",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_ERP",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Ilosc",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "JM",
+				"type": "nchar"
+			},
+			{
+				"name": "Cena",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 2
+			},
+			{
+				"name": "Wartosc",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 2
+			},
+			{
+				"name": "DataDokumentu",
+				"type": "date"
+			},
+			{
+				"name": "Data_ladowania",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SH_FakturySprzedazy"
+		}
+	}
+}
