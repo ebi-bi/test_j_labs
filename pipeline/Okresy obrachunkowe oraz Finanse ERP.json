@@ -8,7 +8,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "OkresyObrachunkowe_copy",
+						"activity": "mapowenie klientow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -136,7 +136,14 @@
 			{
 				"name": "mapowenie klientow",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "OkresyObrachunkowe_copy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -151,7 +158,8 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink"
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE [tmp].[map_sh_Klienci]"
 					},
 					"enableStaging": false,
 					"translator": {
