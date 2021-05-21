@@ -233,7 +233,8 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink"
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -248,17 +249,6 @@
 									"name": "Nr_FV",
 									"type": "String",
 									"physicalType": "nchar"
-								}
-							},
-							{
-								"source": {
-									"name": "NazwaUsługiId",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "ID_uslugi",
-									"type": "Int32",
-									"physicalType": "int"
 								}
 							},
 							{
