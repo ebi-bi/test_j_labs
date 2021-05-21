@@ -252,8 +252,8 @@
 							},
 							{
 								"source": {
-									"name": "ComplianceAssetId",
-									"type": "String"
+									"name": "NazwaUsługiId",
+									"type": "Int32"
 								},
 								"sink": {
 									"name": "ID_uslugi",
