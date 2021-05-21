@@ -24,7 +24,7 @@
 				}
 			},
 			{
-				"name": "SH_Faktury_Sprzedazy",
+				"name": "OkresyObrachunkowe_copy",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -42,7 +42,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"sqlWriterStoredProcedureName": "[dbo].[BI_GenerowanieWartosciBilansu]"
+						"preCopyScript": "TRUNCATE TABEL  SH_Okres_obrachunkowy"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -50,11 +50,11 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "ContentTypeID",
-									"type": "String"
+									"name": "Id",
+									"type": "Int32"
 								},
 								"sink": {
-									"name": "Okres",
+									"name": "ID",
 									"type": "String",
 									"physicalType": "nchar"
 								}
@@ -65,101 +65,44 @@
 									"type": "String"
 								},
 								"sink": {
-									"name": "Nr_FV",
+									"name": "Miesiac",
 									"type": "String",
 									"physicalType": "nchar"
 								}
 							},
 							{
 								"source": {
-									"name": "ComplianceAssetId",
-									"type": "String"
+									"name": "StatusOtwartyZamknięty",
+									"type": "Boolean"
 								},
 								"sink": {
-									"name": "ID_uslugi",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "KlientId",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "ID_ERP",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "JMValue",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Ilosc",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"source": {
-									"name": "Ilość",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "JM",
+									"name": "Otwarte?",
 									"type": "String",
 									"physicalType": "nchar"
 								}
 							},
 							{
 								"source": {
-									"name": "CenaJednostkowa",
+									"name": "GodzinyNormatywne",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Godziny_normatywne",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Korekta_stawki_APO",
 									"type": "Double"
 								},
 								"sink": {
-									"name": "Cena",
+									"name": "Korekta_stawki_APO",
 									"type": "Decimal",
 									"physicalType": "decimal",
 									"scale": 2,
-									"precision": 12
-								}
-							},
-							{
-								"source": {
-									"name": "WartośćFvNetto",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "Wartosc",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 12
-								}
-							},
-							{
-								"source": {
-									"name": "NazwaUsługiId",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "DataDokumentu",
-									"type": "DateTime",
-									"physicalType": "date"
-								}
-							},
-							{
-								"source": {
-									"name": "OkresId",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "Data_ladowania",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"precision": 10
 								}
 							}
 						],
@@ -172,13 +115,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "FakturyKlientow",
+						"referenceName": "Okresy_obrachunkowe",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SH_Faktury_Klientow",
+						"referenceName": "SH_OkresyObrachunkowe",
 						"type": "DatasetReference"
 					}
 				]
