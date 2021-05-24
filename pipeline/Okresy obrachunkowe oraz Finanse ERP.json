@@ -23,7 +23,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[BI_JOB_LOAD_ERP]"
+					"storedProcedureName": "[adf].[Load_OPTIMA_ERP]"
 				},
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
