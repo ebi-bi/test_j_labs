@@ -13,6 +13,7 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
+				"userProperties": [],
 				"typeProperties": {
 					"url": "https://jlabs.evolpe.it/service/v4_1/rest.php",
 					"method": "POST",
@@ -23,8 +24,8 @@
 				}
 			},
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "Get ID",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
 						"activity": "Login",
@@ -33,19 +34,21 @@
 						]
 					}
 				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
+					"variableName": "Login",
+					"value": {
+						"value": "@activity('Login').output",
+						"type": "Expression"
+					}
 				}
 			}
 		],
+		"variables": {
+			"Login": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
