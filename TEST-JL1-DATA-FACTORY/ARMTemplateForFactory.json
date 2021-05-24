@@ -141,7 +141,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "mapowenie klientow",
+								"activity": "Faktury spprzedazy SH - Copy",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -344,6 +344,153 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Faktury spprzedazy SH - Copy",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "mapowenie klientow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Nr_FV",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ilość",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Ilosc",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "JMValue",
+											"type": "String"
+										},
+										"sink": {
+											"name": "JM",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "CenaJednostkowa",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Cena",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 12
+										}
+									},
+									{
+										"source": {
+											"name": "WartośćFvNetto",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Wartosc",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 12
+										}
+									},
+									{
+										"source": {
+											"name": "KlientId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Klient_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Okres_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "NazwaUsługiId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Usluga_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FakturySprzedazy",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_Faktury_Klientow",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"annotations": []
@@ -353,8 +500,67 @@
 				"[concat(variables('factoryId'), '/datasets/Okresy_obrachunkowe')]",
 				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]",
 				"[concat(variables('factoryId'), '/datasets/Klienci_SH')]",
-				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]"
+				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]",
+				"[concat(variables('factoryId'), '/datasets/FakturySprzedazy')]",
+				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Pobieranie danych CRM')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Login",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://jlabs.evolpe.it/service/v4_1/rest.php",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
+						}
+					},
+					{
+						"name": "Get ID",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Login",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Login",
+							"value": {
+								"value": "@activity('Login').output",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"variables": {
+					"Login": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DataRCPOd')]",
@@ -417,119 +623,10 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Dostęp do bazy SQL -> J_LABS_BI",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('J_LABS_BI_connectionString')]",
-					"userName": "[parameters('J_LABS_BI_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('J_LABS_BI_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "SQLIntegracjaTEST",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SharePointOnlineList",
-				"typeProperties": {
-					"siteUrl": "https://jlabspl.sharepoint.com/sites/PowerBI",
-					"tenantId": "b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8",
-					"servicePrincipalId": "[parameters('SharePoint_JLabs_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalKey": {
-						"type": "SecureString",
-						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MAIN-ETL-TRIGGER')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [
-					"Witold Toczek"
-				],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MAIN-ETL",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Month",
-						"interval": 1,
-						"startTime": "2021-05-20T13:51:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ss",
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2021-05-18T15:45:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"description": "Dostęp do środowiska testowego",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FakturyKlientow')]",
+			"name": "[concat(parameters('factoryName'), '/FakturySprzedazy')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Dodatkowe faktury klientów",
 				"linkedServiceName": {
 					"referenceName": "SharePoint_JLabs",
 					"type": "LinkedServiceReference"
@@ -542,6 +639,52 @@
 				"schema": [],
 				"typeProperties": {
 					"listName": "Faktury_sprzedazy"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Klienci_SH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Klienci"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Okresy_obrachunkowe')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "OkresyObrachunkowe"
 				}
 			},
 			"dependsOn": [
@@ -623,52 +766,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FakturySprzedazy')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "Faktury_sprzedazy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Okresy_obrachunkowe')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "OkresyObrachunkowe"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SH_OkresyObrachunkowe')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -723,29 +820,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Klienci_SH')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "Klienci"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/temp_map_klienci')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -779,6 +853,129 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Dostęp do bazy SQL -> J_LABS_BI",
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('J_LABS_BI_connectionString')]",
+					"userName": "[parameters('J_LABS_BI_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('J_LABS_BI_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "SQLIntegracjaTEST",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SharePointOnlineList",
+				"typeProperties": {
+					"siteUrl": "https://jlabspl.sharepoint.com/sites/PowerBI",
+					"tenantId": "b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8",
+					"servicePrincipalId": "[parameters('SharePoint_JLabs_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MAIN-ETL-TRIGGER')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [
+					"Witold Toczek"
+				],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MAIN-ETL",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2021-05-20T13:51:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								9
+							],
+							"weekDays": [
+								"Monday",
+								"Tuesday",
+								"Wednesday",
+								"Thursday",
+								"Friday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "ss",
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2021-05-18T15:45:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "Dostęp do środowiska testowego",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		}
 	]
 }
