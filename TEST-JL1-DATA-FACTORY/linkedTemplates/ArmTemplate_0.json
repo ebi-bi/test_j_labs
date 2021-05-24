@@ -33,63 +33,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Pobieranie danych CRM')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Login",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://jlabs.evolpe.it/service/v4_1/rest.php",
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/x-www-form-urlencoded"
-							},
-							"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
-						}
-					},
-					{
-						"name": "Get ID",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Login",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "Login",
-							"value": {
-								"value": "@activity('Login').output",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"variables": {
-					"Login": {
-						"type": "String"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -262,6 +205,218 @@
 						}
 					}
 				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Pobieranie danych CRM')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Login",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@variables('URL_CRM')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
+						}
+					},
+					{
+						"name": "Set ID",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Login",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Login",
+							"value": {
+								"value": "@activity('Login').output.id",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Specjalisci",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Set ID",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@variables('URL_CRM')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							"body": {
+								"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_Specialists\",\n\"query\": \"ev_specialists.date_modified>'@{getPastTime(30, 'Day', 'yyyy-MM-ddTHH:mm:ss')}' and ev_specialists.specialist_status<>'candidate' and ev_specialists.specialist_status<>'candidate_in_process'\",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"first_name\",\"last_name\",\"approximate_address_city\",\"approximate_address_state\",\"position,candidate_experience\",\"specialist_status\",\"recruitment_status\",\"reference_rate,name\",\"erp_id\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"600\",\n\t\"deleted\": 0\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Specjalisci",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Specjalisci",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Specjalisci",
+							"value": {
+								"value": "@activity('Specjalisci').output.entry_list",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Specjalisci to SQL",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Set Specjalisci",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[CRM_Dim_Pracownicy_Refresh]",
+							"storedProcedureParameters": {
+								"specjalisci": {
+									"value": {
+										"value": "@string(variables('Specjalisci'))",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Set Specjalisci",
+								"dependencyConditions": [
+									"Skipped"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('Specjalisci')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Specjalisci to SQL_copy1",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[adf].[CRM_Dim_Pracownicy_Refresh]",
+										"storedProcedureParameters": {
+											"specjalisci": {
+												"value": {
+													"value": "@string(array(item()))",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "J_LABS_BI",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"Login": {
+						"type": "String"
+					},
+					"URL_CRM": {
+						"type": "String",
+						"defaultValue": "https://jlabs.evolpe.it/service/v4_1/rest.php"
+					},
+					"Specjalisci": {
+						"type": "Array"
+					},
+					"Specjalista": {
+						"type": "Array"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -483,7 +638,7 @@
 					}
 				],
 				"typeProperties": {
-					"schema": "tmp",
+					"schema": "adf",
 					"table": "map_sh_Klienci"
 				}
 			},
@@ -581,7 +736,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_JOB_LOAD_ERP]"
+							"storedProcedureName": "[[adf].[Load_OPTIMA_ERP]"
 						},
 						"linkedServiceName": {
 							"referenceName": "J_LABS_BI",
@@ -719,7 +874,7 @@
 							},
 							"sink": {
 								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE [tmp].[map_sh_Klienci]"
+								"preCopyScript": "TRUNCATE TABLE [adf].[map_sh_Klienci]"
 							},
 							"enableStaging": false,
 							"translator": {

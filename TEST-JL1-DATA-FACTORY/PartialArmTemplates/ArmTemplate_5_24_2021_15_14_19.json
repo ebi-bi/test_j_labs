@@ -6,129 +6,12 @@
 			"type": "string",
 			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
-		},
-		"J_LABS_BI_connectionString": {
-			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
-		},
-		"J_LABS_BI_password": {
-			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
-		},
-		"SharePoint_JLabs_servicePrincipalKey": {
-			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs”"
-		},
-		"J_LABS_BI_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "J-LABS\\witold.toczek.ext"
-		},
-		"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/MAIN-ETL')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Wait1",
-						"type": "Wait",
-						"dependsOn": [
-							{
-								"activity": "DaneRCPOd",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": 5
-						}
-					},
-					{
-						"name": "DaneRCPOd",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DataRCPOd",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					}
-				],
-				"variables": {
-					"dzienTygodnia": {
-						"type": "Boolean",
-						"defaultValue": true
-					},
-					"currentDay": {
-						"type": "String"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DataRCPOd')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Wywołanie procedury wyliczającej rentowność specjalistów",
-				"activities": [
-					{
-						"name": "Rentownosc_specjalistow",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_RentownoscSpecjalistow_TEST]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Okresy obrachunkowe oraz Finanse ERP')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -256,15 +139,13 @@
 						"inputs": [
 							{
 								"referenceName": "Okresy_obrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "SH_OkresyObrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -333,15 +214,13 @@
 						"inputs": [
 							{
 								"referenceName": "Klienci_SH",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "temp_map_klienci",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -480,15 +359,13 @@
 						"inputs": [
 							{
 								"referenceName": "FakturySprzedazy",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "SH_Faktury_Klientow",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -496,13 +373,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]",
-				"[concat(variables('factoryId'), '/datasets/Okresy_obrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/Klienci_SH')]",
-				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]",
-				"[concat(variables('factoryId'), '/datasets/FakturySprzedazy')]",
-				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]"
+				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]"
 			]
 		},
 		{
@@ -713,266 +584,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DataRCPOd')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane pomocnicze"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "eHouer",
-						"type": "date"
-					},
-					{
-						"name": "CRM",
-						"type": "date"
-					},
-					{
-						"name": "ERP_Optima",
-						"type": "date"
-					},
-					{
-						"name": "Data_ladowania",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "eHouer_mc",
-						"type": "nchar"
-					},
-					{
-						"name": "CRM_mc",
-						"type": "nchar"
-					},
-					{
-						"name": "ERP_Optima_mc",
-						"type": "nchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Config_IncrementDate"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FakturySprzedazy')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "Faktury_sprzedazy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Klienci_SH')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "Klienci"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Okresy_obrachunkowe')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SharePoint_JLabs",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane z list Share Point"
-				},
-				"annotations": [],
-				"type": "SharePointOnlineListResource",
-				"schema": [],
-				"typeProperties": {
-					"listName": "OkresyObrachunkowe"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SH_Faktury_Klientow')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane w bazie BI SQL"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Okres",
-						"type": "nchar"
-					},
-					{
-						"name": "Nr_FV",
-						"type": "nchar"
-					},
-					{
-						"name": "ID_uslugi",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_ERP",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Ilosc",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "JM",
-						"type": "nchar"
-					},
-					{
-						"name": "Cena",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "Wartosc",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "DataDokumentu",
-						"type": "date"
-					},
-					{
-						"name": "Data_ladowania",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SH_FakturySprzedazy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SH_OkresyObrachunkowe')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane w bazie BI SQL"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "nchar"
-					},
-					{
-						"name": "Miesiac",
-						"type": "nchar"
-					},
-					{
-						"name": "Otwarte?",
-						"type": "nchar"
-					},
-					{
-						"name": "Data_ladowanie",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Godziny_normatywne",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Korekta_stawki_APO",
-						"type": "decimal",
-						"precision": 10,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SH_Okres_obrachunkowy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/temp_map_klienci')]",
@@ -1004,131 +616,6 @@
 					"schema": "adf",
 					"table": "map_sh_Klienci"
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Dostęp do bazy SQL -> J_LABS_BI",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('J_LABS_BI_connectionString')]",
-					"userName": "[parameters('J_LABS_BI_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('J_LABS_BI_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "SQLIntegracjaTEST",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SharePointOnlineList",
-				"typeProperties": {
-					"siteUrl": "https://jlabspl.sharepoint.com/sites/PowerBI",
-					"tenantId": "b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8",
-					"servicePrincipalId": "[parameters('SharePoint_JLabs_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalKey": {
-						"type": "SecureString",
-						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MAIN-ETL-TRIGGER')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [
-					"Witold Toczek"
-				],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MAIN-ETL",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Week",
-						"interval": 1,
-						"startTime": "2021-05-20T13:51:00Z",
-						"timeZone": "UTC",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								9
-							],
-							"weekDays": [
-								"Monday",
-								"Tuesday",
-								"Wednesday",
-								"Thursday",
-								"Friday"
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ss",
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2021-05-18T15:45:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SQLIntegracjaTEST')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"description": "Dostęp do środowiska testowego",
-				"typeProperties": {}
 			},
 			"dependsOn": []
 		}
