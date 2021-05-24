@@ -234,8 +234,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy",
-						"sqlWriterStoredProcedureName": "SH_FakturySprzedazy_STOP"
+						"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy"
 					},
 					"enableStaging": false,
 					"translator": {
