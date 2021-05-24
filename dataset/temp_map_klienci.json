@@ -23,7 +23,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "tmp",
+			"schema": "adf",
 			"table": "map_sh_Klienci"
 		}
 	}

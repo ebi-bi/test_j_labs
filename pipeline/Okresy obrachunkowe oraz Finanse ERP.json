@@ -159,7 +159,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE [tmp].[map_sh_Klienci]"
+						"preCopyScript": "TRUNCATE TABLE [adf].[map_sh_Klienci]"
 					},
 					"enableStaging": false,
 					"translator": {
