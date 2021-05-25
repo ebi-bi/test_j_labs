@@ -1,0 +1,128 @@
+{
+	"name": "Pobieranie danych CRM_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Login",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('URL_CRM')",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
+				}
+			},
+			{
+				"name": "Set ID",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Login",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Login",
+					"value": {
+						"value": "@activity('Login').output.id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Stawki specjalistow",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set ID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('URL_CRM')",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": {
+						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_ContractsOfEmployment\",\n\"query\": \"ev_contractsofemployment.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' ,\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"specialist_id\",\"rate\",\"date_contract_start\",\"date_contract_end\",\"kind_of_contract\",\"specialist_status\", \"reference_rate\", \"deleted\",\"account_id\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"2000\",\n\t\"deleted\": 1\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set stawkiSpecjalistow",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Stawki specjalistow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Specjalisci",
+					"value": {
+						"value": "@activity('Stawki specjalistow').output",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Login": {
+				"type": "String"
+			},
+			"URL_CRM": {
+				"type": "String",
+				"defaultValue": "https://jlabs.evolpe.it/service/v4_1/rest.php"
+			},
+			"Specjalisci": {
+				"type": "Array"
+			},
+			"Specjalista": {
+				"type": "Array"
+			},
+			"dniDoTylu": {
+				"type": "String",
+				"defaultValue": "7"
+			},
+			"stawkiSpecjalistow": {
+				"type": "Array"
+			}
+		},
+		"annotations": []
+	}
+}
