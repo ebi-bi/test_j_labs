@@ -664,7 +664,7 @@
 								]
 							},
 							{
-								"activity": "mapowenie klientow",
+								"activity": "Mapowanie klientow",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -695,7 +695,14 @@
 					{
 						"name": "OkresyObrachunkowe_copy",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -797,9 +804,16 @@
 						]
 					},
 					{
-						"name": "mapowenie klientow",
+						"name": "Mapowanie klientow",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -868,7 +882,14 @@
 					{
 						"name": "Faktury spprzedazy SH - Copy",
 						"type": "Copy",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -1003,6 +1024,26 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "CZYSZCZENIE BUFOROW",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[CLEAR_OPTIMA_ERP]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
