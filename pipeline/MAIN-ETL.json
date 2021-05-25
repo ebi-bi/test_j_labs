@@ -3,22 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Wait1",
-				"type": "Wait",
-				"dependsOn": [
-					{
-						"activity": "DaneRCPOd",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitTimeInSeconds": 5
-				}
-			},
-			{
 				"name": "DaneRCPOd",
 				"type": "Lookup",
 				"dependsOn": [],
@@ -40,6 +24,26 @@
 						"referenceName": "DataRCPOd",
 						"type": "DatasetReference"
 					}
+				}
+			},
+			{
+				"name": "Dane finansowe ERP",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "DaneRCPOd",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Okresy obrachunkowe oraz Finanse ERP",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
 				}
 			}
 		],
