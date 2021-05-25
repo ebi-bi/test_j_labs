@@ -658,6 +658,18 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
+								"activity": "OkresyObrachunkowe_copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "mapowenie klientow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
 								"activity": "Faktury spprzedazy SH - Copy",
 								"dependencyConditions": [
 									"Succeeded"
@@ -698,8 +710,7 @@
 								"httpRequestTimeout": "00:05:00"
 							},
 							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE SH_Okres_obrachunkowy"
+								"type": "SqlServerSink"
 							},
 							"enableStaging": false,
 							"translator": {
@@ -788,14 +799,7 @@
 					{
 						"name": "mapowenie klientow",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "OkresyObrachunkowe_copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -810,8 +814,7 @@
 								"httpRequestTimeout": "00:05:00"
 							},
 							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE [adf].[map_sh_Klienci]"
+								"type": "SqlServerSink"
 							},
 							"enableStaging": false,
 							"translator": {
@@ -865,14 +868,7 @@
 					{
 						"name": "Faktury spprzedazy SH - Copy",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "mapowenie klientow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -887,8 +883,7 @@
 								"httpRequestTimeout": "00:05:00"
 							},
 							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy"
+								"type": "SqlServerSink"
 							},
 							"enableStaging": false,
 							"translator": {
