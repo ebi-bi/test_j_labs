@@ -60,8 +60,7 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE SH_Okres_obrachunkowy"
+						"type": "SqlServerSink"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -163,8 +162,7 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE [adf].[map_sh_Klienci]"
+						"type": "SqlServerSink"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -231,8 +229,7 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE SH_FakturySprzedazy"
+						"type": "SqlServerSink"
 					},
 					"enableStaging": false,
 					"translator": {
