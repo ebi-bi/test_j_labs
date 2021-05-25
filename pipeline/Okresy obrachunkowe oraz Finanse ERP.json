@@ -14,7 +14,7 @@
 						]
 					},
 					{
-						"activity": "mapowenie klientow",
+						"activity": "Mapowanie klientow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -152,7 +152,7 @@
 				]
 			},
 			{
-				"name": "mapowenie klientow",
+				"name": "Mapowanie klientow",
 				"type": "Copy",
 				"dependsOn": [
 					{
