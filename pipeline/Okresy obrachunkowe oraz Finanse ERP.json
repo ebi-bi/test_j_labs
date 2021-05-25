@@ -8,6 +8,18 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
+						"activity": "OkresyObrachunkowe_copy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "mapowenie klientow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
 						"activity": "Faktury spprzedazy SH - Copy",
 						"dependencyConditions": [
 							"Succeeded"
@@ -136,14 +148,7 @@
 			{
 				"name": "mapowenie klientow",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "OkresyObrachunkowe_copy",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -211,14 +216,7 @@
 			{
 				"name": "Faktury spprzedazy SH - Copy",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "mapowenie klientow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
