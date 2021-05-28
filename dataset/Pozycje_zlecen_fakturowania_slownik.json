@@ -1,5 +1,5 @@
 {
-	"name": "SharePointOnlineListResource1",
+	"name": "Pozycje_zlecen_fakturowania_slownik",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SharePoint_JLabs_ZleceniaFV",
@@ -12,7 +12,7 @@
 		"type": "SharePointOnlineListResource",
 		"schema": [],
 		"typeProperties": {
-			"listName": "KluczePodziałoweKosztówOgólnych"
+			"listName": "Pozycje_zleceniaSlownik"
 		}
 	}
 }
