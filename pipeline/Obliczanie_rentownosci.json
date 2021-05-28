@@ -16,7 +16,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[BI_RentownoscSpecjalistow_TEST]"
+					"storedProcedureName": "[adf].[START_RENTOWNOSC]"
 				},
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
