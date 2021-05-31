@@ -23,7 +23,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "USLUGI_SH_SQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -39,11 +39,129 @@
 						"type": "SharePointOnlineListSource",
 						"httpRequestTimeout": "00:05:00"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Title",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Title",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Kod_towaru",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Kod_towaru",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ID_uslugi",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ID_uslugi",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Opis",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Opis",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Jm",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Jm",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Waluta",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Waluta",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Vat",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Vat",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Id",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Aktywny",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "Aktywny",
+									"type": "Boolean",
+									"physicalType": "bit"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "Kartoteka_uslug",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adf_uslugi",
 						"type": "DatasetReference"
 					}
 				]
