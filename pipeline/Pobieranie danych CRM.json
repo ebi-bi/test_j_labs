@@ -327,7 +327,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[adf].[CRM_Stawki_Specjalistow_Refresh]",
+					"storedProcedureName": "[adf].[CRM_Stawki_Klientow_Refresh]",
 					"storedProcedureParameters": {
 						"stawki": {
 							"value": {
