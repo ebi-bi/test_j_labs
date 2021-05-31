@@ -225,6 +225,67 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Stawki klientow",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set ID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('URL_CRM')",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": {
+						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_ContractsOfEmployment\",\n\"query\": \"ev_contractsofemployment.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' \",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"specialist_id\",\"rate\",\"date_contract_start\",\"date_contract_end\",\"kind_of_contract\",\"specialist_status\", \"reference_rate\", \"deleted\",\"account_id\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"2000\",\n\t\"deleted\": 1\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "BI_Stawki_spec_Stop",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Stawki specjalistow to SQL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_Stawki_spec_Stop]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"variables": {
