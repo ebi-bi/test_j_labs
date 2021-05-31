@@ -1,0 +1,58 @@
+{
+	"name": "adf_uslugi",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Kod_towaru",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ID_uslugi",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Opis",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Jm",
+				"type": "varchar"
+			},
+			{
+				"name": "Waluta",
+				"type": "varchar"
+			},
+			{
+				"name": "Vat",
+				"type": "varchar"
+			},
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Aktywny",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "Kartoteka_uslug"
+		}
+	}
+}
