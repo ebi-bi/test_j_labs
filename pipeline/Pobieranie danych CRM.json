@@ -255,7 +255,7 @@
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
 					"body": {
-						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_ContractsOfEmployment\",\n\"query\": \"ev_contractsofemployment.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' \",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"specialist_id\",\"rate\",\"date_contract_start\",\"date_contract_end\",\"kind_of_contract\",\"specialist_status\", \"reference_rate\", \"deleted\",\"account_id\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"2000\",\n\t\"deleted\": 1\n}",
+						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_CustomerOrderItems\",\n\"query\": \"ev_customerorderitems.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}'\",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"specialist_id\",\"account_id\",\"hourly_rate\",\"start_date\",\"finish_date\",\"customerorder_id\",\"deleted\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"2000\",\n\t\"deleted\": 1\n}",
 						"type": "Expression"
 					}
 				}
@@ -286,6 +286,26 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set stawkiKlientow",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Stawki klientow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "stawkiKlientow",
+					"value": {
+						"value": "@activity('Stawki klientow').output.entry_list",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -307,6 +327,9 @@
 				"defaultValue": "7"
 			},
 			"stawkiSpecjalistow": {
+				"type": "Array"
+			},
+			"stawkiKlientow": {
 				"type": "Array"
 			}
 		},
