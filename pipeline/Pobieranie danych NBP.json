@@ -1,6 +1,12 @@
 {
 	"name": "Pobieranie danych NBP",
 	"properties": {
+		"variables": {
+			"url": {
+				"type": "String",
+				"defaultValue": "http://api.nbp.pl/api/exchangerates/tables/A"
+			}
+		},
 		"annotations": []
 	}
 }
