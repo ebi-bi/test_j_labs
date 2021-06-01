@@ -331,12 +331,66 @@
 					"storedProcedureParameters": {
 						"stawki": {
 							"value": {
-								"value": "@string(variables('stawkiSpecjalistow'))",
+								"value": "@string(variables('stawkiKlientow'))",
 								"type": "Expression"
 							},
 							"type": "String"
 						}
 					}
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "BI_Specjalisci_stop",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Specjalisci to SQL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_Specjalisci_stop]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "BI_Pozycje_Zam_Stop",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Stawki klientow to SQL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_Pozycje_Zam_Stop]"
 				},
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
