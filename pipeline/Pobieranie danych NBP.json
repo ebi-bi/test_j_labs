@@ -1,6 +1,31 @@
 {
 	"name": "Pobieranie danych NBP",
 	"properties": {
+		"activities": [
+			{
+				"name": "Get Kursy",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('url')",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"Accept": "application/json"
+					}
+				}
+			}
+		],
 		"variables": {
 			"url": {
 				"type": "String",
