@@ -53,7 +53,7 @@
 						"Accept": "application/json;odata=verbose",
 						"Content-Type": "application/json;odata=verbose"
 					},
-					"body": "__metadata={type=SP.Data.TestrestListItem},Title=\"New Title 1\""
+					"body": ""
 				}
 			}
 		],
