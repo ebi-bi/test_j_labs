@@ -51,12 +51,35 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set kursy",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Kursy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "kursy",
+					"value": {
+						"value": "@activity('Get Kursy').output.Response",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"url": {
 				"type": "String",
 				"defaultValue": "http://api.nbp.pl/api/exchangerates/tables/A"
+			},
+			"kursy": {
+				"type": "String"
 			}
 		},
 		"annotations": []
