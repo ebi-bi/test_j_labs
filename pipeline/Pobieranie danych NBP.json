@@ -5,7 +5,14 @@
 			{
 				"name": "Get Kursy",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "BI_Kursy_Walut_Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -23,6 +30,26 @@
 					"headers": {
 						"Accept": "application/json"
 					}
+				}
+			},
+			{
+				"name": "BI_Kursy_Walut_Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_Kursy_Walut_Start]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
