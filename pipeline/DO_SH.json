@@ -38,7 +38,7 @@
 				"typeProperties": {
 					"variableName": "zm1",
 					"value": {
-						"value": "@Bearer activity('Pobierz Token').output.access_token",
+						"value": "@activity('Pobierz Token').output.access_token",
 						"type": "Expression"
 					}
 				}
