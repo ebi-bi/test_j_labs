@@ -44,7 +44,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
-					"method": "GET"
+					"method": "GET",
+					"headers": {
+						"Authorization": "@Bearer activity('Pobierz Token').output.access_token",
+						"Content-Type": "application/json;odata=verbose"
+					}
 				}
 			}
 		],
