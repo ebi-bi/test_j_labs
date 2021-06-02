@@ -146,13 +146,6 @@
 									"type": "String",
 									"physicalType": "nvarchar"
 								}
-							},
-							{
-								"sink": {
-									"name": "Delta",
-									"type": "String",
-									"physicalType": "nchar"
-								}
 							}
 						],
 						"typeConversion": true,
