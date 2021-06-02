@@ -55,8 +55,8 @@
 								},
 								"sink": {
 									"name": "IDERP",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
