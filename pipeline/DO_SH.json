@@ -46,7 +46,10 @@
 					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
 					"method": "GET",
 					"headers": {
-						"Authorization": "@Bearer activity('Pobierz Token').output.access_token",
+						"Authorization": {
+							"value": "@Bearer activity('Pobierz Token').output.access_token",
+							"type": "Expression"
+						},
 						"Content-Type": "application/json;odata=verbose"
 					}
 				}
