@@ -54,7 +54,7 @@
 									"type": "String"
 								},
 								"sink": {
-									"name": "ERPID",
+									"name": "IDERP",
 									"type": "Int32",
 									"physicalType": "int"
 								}
@@ -145,6 +145,13 @@
 									"name": "NrSeriiValue",
 									"type": "String",
 									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"sink": {
+									"name": "Delta",
+									"type": "String",
+									"physicalType": "nchar"
 								}
 							}
 						],
