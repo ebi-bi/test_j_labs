@@ -50,7 +50,8 @@
 							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
 							"type": "Expression"
 						},
-						"content-type": "application/json"
+						"content-type": "application/json",
+						"IF-MATCH": "*"
 					},
 					"body": {
 						"value": "{\n\"Title\":\"Nowy kolejny wiersz - poprawa\"\n}",
