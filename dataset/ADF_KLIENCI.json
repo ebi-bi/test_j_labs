@@ -1,0 +1,72 @@
+{
+	"name": "ADF_KLIENCI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ERPID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Waluta",
+				"type": "nchar"
+			},
+			{
+				"name": "Sposob_generowania_zleceniaValue",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Jm",
+				"type": "varchar"
+			},
+			{
+				"name": "Szablon_seria",
+				"type": "nvarchar"
+			},
+			{
+				"name": "OpiekunId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Forma_platnosci",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Termin_platnosci",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NrSeriiValue",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Delta",
+				"type": "nchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "SH_Klienci"
+		}
+	}
+}

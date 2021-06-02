@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "SH_KLIENCI_SQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -15,8 +15,158 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Id",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Title",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Title",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "IDERP",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ERPID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Waluta",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Waluta",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Sposob_generowania_zleceniaValue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Sposob_generowania_zleceniaValue",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Jm",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Jm",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Szablon_seria",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Szablon_seria",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "OpiekunId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "OpiekunId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Forma_platnosci",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Forma_platnosci",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Termin_platnosci",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Termin_platnosci",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "NrSeriiValue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "NrSeriiValue",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Klienci_SH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADF_KLIENCI",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
