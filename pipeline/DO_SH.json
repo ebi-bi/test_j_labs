@@ -43,8 +43,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
-					"method": "POST",
+					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items(5)",
+					"method": "PATCH",
 					"headers": {
 						"Authorization": {
 							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
@@ -53,7 +53,7 @@
 						"content-type": "application/json"
 					},
 					"body": {
-						"value": "{\n\"Title\":\"Nowy kolejny wiersz\"\n}",
+						"value": "{\n\"Title\":\"Nowy kolejny wiersz - poprawa\"\n}",
 						"type": "Expression"
 					}
 				}
