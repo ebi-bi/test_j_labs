@@ -24,26 +24,6 @@
 				}
 			},
 			{
-				"name": "Set variable1",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Pobierz Token",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "zm1",
-					"value": {
-						"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Web1",
 				"type": "WebActivity",
 				"dependsOn": [
@@ -73,7 +53,7 @@
 						"content-type": "application/json"
 					},
 					"body": {
-						"value": "{\n\"Title\":\"xxxx\"\n}",
+						"value": "{\n\"Title\":\"Nowy kolejny wiersz\"\n}",
 						"type": "Expression"
 					}
 				}
