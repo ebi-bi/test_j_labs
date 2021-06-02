@@ -38,8 +38,38 @@
 				"typeProperties": {
 					"variableName": "zm1",
 					"value": {
-						"value": "@activity('Pobierz Token').output.access_token",
+						"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
 						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Pobierz Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
+					"method": "GET",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+							"type": "Expression"
+						}
 					}
 				}
 			}
