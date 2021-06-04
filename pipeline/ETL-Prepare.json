@@ -168,7 +168,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "adf_uslugi",
+						"referenceName": "ADF_USLUGI",
 						"type": "DatasetReference"
 					}
 				]

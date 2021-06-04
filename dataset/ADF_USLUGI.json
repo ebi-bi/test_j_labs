@@ -1,5 +1,5 @@
 {
-	"name": "adf_uslugi",
+	"name": "ADF_USLUGI",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "J_LABS_BI",
