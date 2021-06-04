@@ -1,5 +1,5 @@
 {
-	"name": "SH_KLIENCI_SQL",
+	"name": "SH_SYNCHRONIZACJA_KARTOTEK",
 	"properties": {
 		"description": "Zrzuca dane z SH Klientów do bufora SQL adf.SH_Klienci",
 		"activities": [
