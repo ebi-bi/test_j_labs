@@ -197,40 +197,6 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "SYNCHRONIZACJA_KARTOTEK",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('SYNCHRONIZACJA_KARTOTEK').output",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "Dalta",
-								"value": {
-									"value": "@item()",
-									"type": "Expression"
-								}
-							}
-						}
-					]
-				}
 			}
 		],
 		"variables": {
