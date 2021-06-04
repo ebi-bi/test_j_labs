@@ -1,0 +1,30 @@
+{
+	"name": "Output_rows",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "text",
+				"type": "nvarchar"
+			},
+			{
+				"name": "data",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "output_rows"
+		}
+	}
+}
