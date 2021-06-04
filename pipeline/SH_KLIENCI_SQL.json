@@ -1,6 +1,7 @@
 {
 	"name": "SH_KLIENCI_SQL",
 	"properties": {
+		"description": "Zrzuca dane z SH Klientów do bufora SQL adf.SH_Klienci",
 		"activities": [
 			{
 				"name": "SH_KLIENCI_SQL",
@@ -20,7 +21,8 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink"
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE ADF.SH_Klienci"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -167,6 +169,34 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "SYNCHRONIZACJA_KARTOTEK",
+				"description": "Wyznaczanie przyrostów do aktualizacji inkrementalnej",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SH_KLIENCI_SQL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KARTOTEKI]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
