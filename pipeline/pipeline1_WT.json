@@ -52,7 +52,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "zm_str",
-								"value": "ss"
+								"value": {
+									"value": "@item()",
+									"type": "Expression"
+								}
 							}
 						}
 					]
