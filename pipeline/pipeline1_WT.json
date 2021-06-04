@@ -46,14 +46,14 @@
 					},
 					"activities": [
 						{
-							"name": "Set variable1",
+							"name": "ssss",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "zm_str",
 								"value": {
-									"value": "@item()",
+									"value": "\"ss\"",
 									"type": "Expression"
 								}
 							}
