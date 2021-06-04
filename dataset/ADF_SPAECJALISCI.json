@@ -1,0 +1,19 @@
+{
+	"name": "ADF_SPAECJALISCI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "SH_SPECJALISTA"
+		}
+	}
+}
