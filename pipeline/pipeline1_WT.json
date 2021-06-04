@@ -24,12 +24,12 @@
 						"referenceName": "Output_rows",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			},
 			{
-				"name": "ForEach1",
-				"type": "ForEach",
+				"name": "esss",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
 						"activity": "Lookup1",
@@ -40,25 +40,11 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
+					"variableName": "zm_str",
+					"value": {
 						"value": "@activity('Lookup1').output",
 						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "ssss",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "zm_str",
-								"value": {
-									"value": "\"ss\"",
-									"type": "Expression"
-								}
-							}
-						}
-					]
+					}
 				}
 			}
 		],
