@@ -42,7 +42,7 @@
 				"typeProperties": {
 					"variableName": "zm_str",
 					"value": {
-						"value": "@activity('Lookup1').output",
+						"value": "@activity('Lookup1').output.text",
 						"type": "Expression"
 					}
 				}
