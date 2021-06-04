@@ -197,6 +197,38 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "GetKlienciDoModyfikacji",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SYNCHRONIZACJA_KARTOTEK",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM    adf.output_rows WHERE Delta = 'M'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Output_rows",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"variables": {
