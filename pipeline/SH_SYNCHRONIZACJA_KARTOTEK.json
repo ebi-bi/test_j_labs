@@ -250,13 +250,36 @@
 					},
 					"activities": [
 						{
-							"name": "Set variable1",
+							"name": "SET ID",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "Dalta",
-								"value": "\"k\""
+								"variableName": "ID",
+								"value": {
+									"value": "@item().ID",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "SET URI",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "SET ID",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "URI_KLIENT MOD",
+								"value": {
+									"value": "replace(@variables('URI_KLIENT MOD'), '_XXX_', '125')",
+									"type": "Expression"
+								}
 							}
 						}
 					]
@@ -264,8 +287,19 @@
 			}
 		],
 		"variables": {
-			"Dalta": {
+			"Delta": {
 				"type": "String"
+			},
+			"ID": {
+				"type": "String"
+			},
+			"URI_KLIENT MOD": {
+				"type": "String",
+				"defaultValue": "https://j-labs.items(_XXX_)"
+			},
+			"URI_KLIENT_INS": {
+				"type": "String",
+				"defaultValue": "https://"
 			}
 		},
 		"annotations": []
