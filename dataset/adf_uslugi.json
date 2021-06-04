@@ -52,7 +52,7 @@
 		],
 		"typeProperties": {
 			"schema": "adf",
-			"table": "Kartoteka_uslug"
+			"table": "SH_Uslugi"
 		}
 	}
 }
