@@ -1,5 +1,5 @@
 {
-	"name": "Kartoteka_uslug",
+	"name": "Uslugi_SH",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "SharePoint_JLabs",
