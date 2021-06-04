@@ -54,7 +54,7 @@
 						"IF-MATCH": "*"
 					},
 					"body": {
-						"value": "[\n{\n\"Title\":\"Nowy kolejny wiersz - 9?\", \"ID\":\"9\"\n},\n{\n\"Title\":\"Nowy kolejny wiersz - 10?\", \"ID\":\"10\"\n}\n]",
+						"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
 						"type": "Expression"
 					}
 				}
