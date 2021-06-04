@@ -3,76 +3,31 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
-				"type": "Lookup",
+				"name": "Set variable1",
+				"type": "SetVariable",
 				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM    adf.output_rows WHERE Delta = 'M'",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "Output_rows",
-						"type": "DatasetReference"
-					},
-					"firstRowOnly": false
-				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Lookup1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Lookup1').output.value",
+					"variableName": "zm_str",
+					"value": {
+						"value": "@replace(variables('z_uri'), '_XXX_', variables('id'))",
 						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "id",
-								"value": {
-									"value": "@item().ID",
-									"type": "Expression"
-								}
-							}
-						}
-					]
+					}
 				}
 			}
 		],
 		"variables": {
 			"zm_str": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "123"
 			},
 			"z_uri": {
 				"type": "String",
 				"defaultValue": "Https://jsj.items(_XXX_)"
 			},
 			"id": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "555"
 			}
 		},
 		"annotations": []

@@ -162,7 +162,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Kartoteka_uslug",
+						"referenceName": "Uslugi_SH",
 						"type": "DatasetReference"
 					}
 				],
