@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT text, data\nFROM    adf.output_rows",
+						"sqlReaderQuery": "SELECT ID, text, data\nFROM    adf.output_rows WHERE Delta = 'M'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -52,9 +52,9 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "zm_str",
+								"variableName": "id",
 								"value": {
-									"value": "@item().text",
+									"value": "@item().ID",
 									"type": "Expression"
 								}
 							}
@@ -65,6 +65,13 @@
 		],
 		"variables": {
 			"zm_str": {
+				"type": "String"
+			},
+			"z_uri": {
+				"type": "String",
+				"defaultValue": "Https://jsj.items(_XXX_)"
+			},
+			"id": {
 				"type": "String"
 			}
 		},
