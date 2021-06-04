@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT CAST(ID as nchar(2) as ID, text, data\nFROM    adf.output_rows WHERE Delta = 'M'",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM    adf.output_rows WHERE Delta = 'M'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
