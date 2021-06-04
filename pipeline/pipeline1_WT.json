@@ -28,8 +28,8 @@
 				}
 			},
 			{
-				"name": "Set variable1",
-				"type": "SetVariable",
+				"name": "ForEach1",
+				"type": "ForEach",
 				"dependsOn": [
 					{
 						"activity": "Lookup1",
@@ -40,8 +40,22 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "zm_str",
-					"value": "\"aa\""
+					"items": {
+						"value": "@activity('Lookup1').output",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "zm_str",
+								"value": "ss"
+							}
+						}
+					]
 				}
 			}
 		],
