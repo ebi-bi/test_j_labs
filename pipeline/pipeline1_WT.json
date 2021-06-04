@@ -24,11 +24,11 @@
 						"referenceName": "Output_rows",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": true
+					"firstRowOnly": false
 				}
 			},
 			{
-				"name": "esss",
+				"name": "Set variable1",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -41,16 +41,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "zm_str",
-					"value": {
-						"value": "@activity('Lookup1').output.text",
-						"type": "Expression"
-					}
+					"value": "\"aa\""
 				}
 			}
 		],
 		"variables": {
 			"zm_str": {
-				"type": "Array"
+				"type": "String"
 			}
 		},
 		"annotations": []
