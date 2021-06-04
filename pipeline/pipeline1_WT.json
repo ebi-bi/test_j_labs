@@ -17,6 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT text, data\nFROM            adf.output_rows",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
