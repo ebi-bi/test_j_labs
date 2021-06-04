@@ -227,7 +227,39 @@
 					"dataset": {
 						"referenceName": "Output_rows",
 						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Po klientach do modyfikacji",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetKlienciDoModyfikacji",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetKlienciDoModyfikacji').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Dalta",
+								"value": "\"k\""
+							}
+						}
+					]
 				}
 			}
 		],
