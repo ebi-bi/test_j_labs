@@ -43,7 +43,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
+					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items",
 					"method": "GET",
 					"headers": {
 						"Authorization": {
