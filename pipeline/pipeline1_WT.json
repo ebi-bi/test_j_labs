@@ -43,7 +43,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci1')/items",
+					"url": {
+						"value": "@variables('http_klienci')",
+						"type": "Expression"
+					},
 					"method": "GET",
 					"headers": {
 						"Authorization": {
