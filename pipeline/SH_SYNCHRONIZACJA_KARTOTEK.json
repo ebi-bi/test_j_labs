@@ -322,7 +322,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"url": {
-									"value": "@variables('http_run')",
+									"value": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(23)",
 									"type": "Expression"
 								},
 								"method": "POST",
