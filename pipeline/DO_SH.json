@@ -24,8 +24,8 @@
 				}
 			},
 			{
-				"name": "Web1",
-				"type": "WebActivity",
+				"name": "GetKlienciNowi",
+				"type": "Lookup",
 				"dependsOn": [
 					{
 						"activity": "Pobierz Token",
@@ -43,20 +43,17 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
-					"method": "POST",
-					"headers": {
-						"Authorization": {
-							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
-							"type": "Expression"
-						},
-						"content-type": "application/json",
-						"IF-MATCH": "*"
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
-					"body": {
-						"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
-						"type": "Expression"
-					}
+					"dataset": {
+						"referenceName": "Output_rows",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
