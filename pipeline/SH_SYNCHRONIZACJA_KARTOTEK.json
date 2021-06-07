@@ -320,6 +320,45 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "Web_klient_modify",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Set body",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@variables('http_run')",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+										"type": "Expression"
+									},
+									"content-type": "application/json",
+									"IF-MATCH": "*"
+								},
+								"body": {
+									"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
