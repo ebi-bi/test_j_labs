@@ -302,31 +302,11 @@
 							}
 						},
 						{
-							"name": "Set body",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "SET URI",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "body_content",
-								"value": {
-									"value": "@item().text",
-									"type": "Expression"
-								}
-							}
-						},
-						{
 							"name": "Web_klient_modify",
 							"type": "WebActivity",
 							"dependsOn": [
 								{
-									"activity": "Set body",
+									"activity": "SET URI",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -345,7 +325,7 @@
 									"value": "@variables('http_run')",
 									"type": "Expression"
 								},
-								"method": "GET",
+								"method": "POST",
 								"headers": {
 									"Authorization": {
 										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
@@ -355,7 +335,7 @@
 									"IF-MATCH": "*"
 								},
 								"body": {
-									"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
+									"value": "@item().text",
 									"type": "Expression"
 								}
 							}
