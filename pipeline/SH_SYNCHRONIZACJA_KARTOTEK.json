@@ -296,10 +296,23 @@
 							"typeProperties": {
 								"variableName": "http_run",
 								"value": {
-									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', '118')",
+									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', variables('ID'))",
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "Set body",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "SET URI",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": []
 						}
 					]
 				}
@@ -593,7 +606,7 @@
 				"type": "String",
 				"defaultValue": "https://"
 			},
-			"Body_content": {
+			"body_content": {
 				"type": "String"
 			},
 			"http_klienci": {
