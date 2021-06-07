@@ -232,7 +232,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M'",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' AND ID = 23",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
