@@ -269,49 +269,9 @@
 					},
 					"activities": [
 						{
-							"name": "SET ID",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "ID",
-								"value": {
-									"value": "@item().ID",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "SET URI",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "SET ID",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "http_run",
-								"value": {
-									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', item().ID)",
-									"type": "Expression"
-								}
-							}
-						},
-						{
 							"name": "Web_klient_modify",
 							"type": "WebActivity",
-							"dependsOn": [
-								{
-									"activity": "SET URI",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
