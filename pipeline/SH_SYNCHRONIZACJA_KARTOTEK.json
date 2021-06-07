@@ -239,7 +239,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' AND ID = 23",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' ",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -578,30 +578,102 @@
 					},
 					"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
 				}
+			},
+			{
+				"name": "GetKlienciNowi",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SYNCHRONIZACJA_KARTOTEK",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' ",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Output_rows",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Po klientach nowych",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetKlienciNowi",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetKlienciNowi').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web_klient_nowy",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@variables('http_klienci')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+										"type": "Expression"
+									},
+									"content-type": "application/json",
+									"IF-MATCH": "*"
+								},
+								"body": {
+									"value": "@item().text",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
 		"variables": {
-			"ID": {
-				"type": "String"
-			},
 			"http_klienci_modyf": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(_XXX_)"
 			},
-			"URI_KLIENT_INS": {
-				"type": "String",
-				"defaultValue": "https://"
-			},
-			"body_content": {
-				"type": "String"
-			},
 			"http_klienci": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items"
-			},
-			"http_run": {
-				"type": "String",
-				"defaultValue": "!!"
 			}
 		},
 		"annotations": []
