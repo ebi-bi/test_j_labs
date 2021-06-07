@@ -43,7 +43,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items",
+					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci1')/items",
 					"method": "GET",
 					"headers": {
 						"Authorization": {
@@ -72,6 +72,10 @@
 			"id": {
 				"type": "String",
 				"defaultValue": "555"
+			},
+			"http_klienci": {
+				"type": "String",
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items"
 			}
 		},
 		"annotations": []
