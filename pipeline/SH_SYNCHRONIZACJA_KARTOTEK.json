@@ -339,19 +339,6 @@
 									"type": "Expression"
 								}
 							}
-						},
-						{
-							"name": "Set body",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "body_content",
-								"value": {
-									"value": "@item().text",
-									"type": "Expression"
-								}
-							}
 						}
 					]
 				}
