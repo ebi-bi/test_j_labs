@@ -296,7 +296,7 @@
 							"typeProperties": {
 								"variableName": "http_run",
 								"value": {
-									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', variables('ID'))",
+									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', item().ID)",
 									"type": "Expression"
 								}
 							}
@@ -322,7 +322,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"url": {
-									"value": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(23)",
+									"value": "@replace(variables('http_klienci_modyf'), '_XXX_', item().ID)",
 									"type": "Expression"
 								},
 								"method": "PATCH",
