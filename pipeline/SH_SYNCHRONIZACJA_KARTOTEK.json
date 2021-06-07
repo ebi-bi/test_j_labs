@@ -325,7 +325,7 @@
 									"value": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(23)",
 									"type": "Expression"
 								},
-								"method": "POST",
+								"method": "PATCH",
 								"headers": {
 									"Authorization": {
 										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
