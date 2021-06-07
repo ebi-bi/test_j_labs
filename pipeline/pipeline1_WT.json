@@ -44,7 +44,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@variables('http_klienci')",
+						"value": "@variables('http_run')",
 						"type": "Expression"
 					},
 					"method": "GET",
@@ -74,11 +74,19 @@
 			},
 			"id": {
 				"type": "String",
-				"defaultValue": "555"
+				"defaultValue": "118"
 			},
 			"http_klienci": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items"
+			},
+			"http_klienci_modyf": {
+				"type": "String",
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(118)"
+			},
+			"http_run": {
+				"type": "String",
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(118)"
 			}
 		},
 		"annotations": []
