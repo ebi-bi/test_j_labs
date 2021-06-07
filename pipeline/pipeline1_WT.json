@@ -28,7 +28,7 @@
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Pobierz Token",
+						"activity": "Set variable1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -58,6 +58,26 @@
 					},
 					"body": {
 						"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Pobierz Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "http_run",
+					"value": {
+						"value": "@replace('cos_XXX_', '_XXX_', '236')",
 						"type": "Expression"
 					}
 				}
