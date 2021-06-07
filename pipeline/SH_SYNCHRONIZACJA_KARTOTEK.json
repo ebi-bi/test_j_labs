@@ -312,7 +312,14 @@
 									]
 								}
 							],
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "body_content",
+								"value": {
+									"value": "@item().text",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
