@@ -28,7 +28,7 @@
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Pobierz Token",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -44,10 +44,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@variables('http_run')",
+						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(23)",
 						"type": "Expression"
 					},
-					"method": "GET",
+					"method": "PATCH",
 					"headers": {
 						"Authorization": {
 							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
@@ -57,27 +57,7 @@
 						"IF-MATCH": "*"
 					},
 					"body": {
-						"value": "{\n\"Title\":\"Nowy kolejny wiersz - 9 id?\", \"ID\":\"9\"\n}\n",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set variable1",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Pobierz Token",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "http_run",
-					"value": {
-						"value": "@replace(variables('http_klienci_modyf'), '_XXX_', '118')",
+						"value": "{\n\"IDERP\":\"1694\"\n}\n",
 						"type": "Expression"
 					}
 				}
