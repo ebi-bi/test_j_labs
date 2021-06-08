@@ -1,0 +1,55 @@
+{
+	"name": "Config_IncrementDate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "eHouer",
+				"type": "date"
+			},
+			{
+				"name": "CRM",
+				"type": "date"
+			},
+			{
+				"name": "ERP_Optima",
+				"type": "date"
+			},
+			{
+				"name": "Data_ladowania",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "eHouer_mc",
+				"type": "nchar"
+			},
+			{
+				"name": "CRM_mc",
+				"type": "nchar"
+			},
+			{
+				"name": "ERP_Optima_mc",
+				"type": "nchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Config_IncrementDate"
+		}
+	}
+}

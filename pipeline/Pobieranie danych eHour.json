@@ -1,6 +1,85 @@
 {
 	"name": "Pobieranie danych eHour",
 	"properties": {
+		"activities": [
+			{
+				"name": "Get pierwszy_dzien_cyklu",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT TOP 1 [ID]\n      ,[eHouer]\n      ,[CRM]\n      ,[ERP_Optima]\n      ,[Data_ladowania]\n      ,[eHouer_mc]\n      ,[CRM_mc]\n      ,[ERP_Optima_mc]\n  FROM [dbo].[Config_IncrementDate]\n  where ID = 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Config_IncrementDate",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set pierwszy_dzien_cyklu",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pierwszy_dzien_cyklu",
+					"value": {
+						"value": "@substring(activity('Get pierwszy_dzien_cyklu').output.firstRow.eHouer,0,10)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "BI_HOURS_Time_Strat",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Set pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_HOURS_Time_Strat]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"pierwszy_dzien_cyklu": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
