@@ -95,7 +95,7 @@
 				}
 			},
 			{
-				"name": "Web1",
+				"name": "Get data eHour",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -123,6 +123,30 @@
 					"url": {
 						"value": "https://ehourapp.com/api/v1/report?start=@{variables('pierwszy_dzien_cyklu')}&end=@{variables('liczony_dzien')}&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
 						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+					}
+				}
+			},
+			{
+				"name": "Set godziny",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get data eHour",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "godziny",
+					"value": {
+						"value": "@activity('Get data eHour').output.data",
+						"type": "Expression"
 					}
 				}
 			}
@@ -133,6 +157,9 @@
 			},
 			"liczony_dzien": {
 				"type": "String"
+			},
+			"godziny": {
+				"type": "Array"
 			}
 		},
 		"annotations": []
