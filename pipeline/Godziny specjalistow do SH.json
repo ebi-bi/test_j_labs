@@ -279,7 +279,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
+						"value": "@variables('http_godzin')",
 						"type": "Expression"
 					},
 					"method": "GET",
