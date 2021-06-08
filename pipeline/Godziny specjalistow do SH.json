@@ -5,7 +5,14 @@
 			{
 				"name": "SH_GodzinySpecjaistow",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Pobierz Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -229,8 +236,74 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Pobierz Token",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
+					"method": "POST",
+					"headers": {
+						"content-type": "application/x-www-form-urlencoded"
+					},
+					"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
+				}
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Pobierz Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+							"type": "Expression"
+						},
+						"content-type": "application/json",
+						"IF-MATCH": "*"
+					},
+					"body": {
+						"value": "{\n\"IDERP\":\"1694\"\n}\n",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"http_godzin": {
+				"type": "String",
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items"
+			}
+		},
 		"annotations": []
 	}
 }
