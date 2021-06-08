@@ -239,7 +239,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' ",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' AND Kartoteka = 'KLIENT'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -601,7 +601,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' ",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' AND Kartoteka = 'KLIENT'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -663,6 +663,48 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Koniec synchronizacji",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Po klientach do modyfikacji",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Po klientach nowych",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KONIEC]",
+					"storedProcedureParameters": {
+						"Kartoteka": {
+							"value": {
+								"value": "'KLIENT'",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
