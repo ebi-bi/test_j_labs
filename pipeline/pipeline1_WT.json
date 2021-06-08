@@ -5,7 +5,14 @@
 			{
 				"name": "Pobierz Token",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "If Condition1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -24,40 +31,46 @@
 				}
 			},
 			{
-				"name": "Web1",
-				"type": "WebActivity",
+				"name": "prod",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Produkcja",
+					"value": {
+						"value": "0",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "zm_str",
+					"value": {
+						"value": "'ss'",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Pobierz Token",
+						"activity": "prod",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": {
-						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(23)",
-						"type": "Expression"
-					},
-					"method": "PATCH",
-					"headers": {
-						"Authorization": {
-							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
-							"type": "Expression"
-						},
-						"content-type": "application/json",
-						"IF-MATCH": "*"
-					},
-					"body": {
-						"value": "{\n\"IDERP\":\"1694\"\n}\n",
+					"expression": {
+						"value": "@variables('Produkcja')",
 						"type": "Expression"
 					}
 				}
@@ -87,6 +100,9 @@
 			"http_run": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(118)"
+			},
+			"Produkcja": {
+				"type": "Boolean"
 			}
 		},
 		"annotations": []
