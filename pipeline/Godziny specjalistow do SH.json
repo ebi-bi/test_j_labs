@@ -279,10 +279,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@variables('http_godzin')",
+						"value": "@variables('http_rcp_items')",
 						"type": "Expression"
 					},
-					"method": "GET",
+					"method": "DELETE",
 					"headers": {
 						"Authorization": {
 							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
@@ -302,6 +302,10 @@
 			"http_godzin": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items"
+			},
+			"http_rcp_items": {
+				"type": "String",
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items(5292)"
 			}
 		},
 		"annotations": []
