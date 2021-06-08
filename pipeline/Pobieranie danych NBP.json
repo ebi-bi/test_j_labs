@@ -107,6 +107,33 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "BI_Kursy_Walut_Stop",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Kursy to SQL",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[BI_Kursy_Walut_Stop]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"variables": {
