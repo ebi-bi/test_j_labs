@@ -20,7 +20,8 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink"
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik"
 					},
 					"enableStaging": false,
 					"translator": {
