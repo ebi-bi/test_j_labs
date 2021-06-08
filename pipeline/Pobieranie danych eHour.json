@@ -54,7 +54,7 @@
 					{
 						"activity": "Set pierwszy_dzien_cyklu",
 						"dependencyConditions": [
-							"Succeeded"
+							"Skipped"
 						]
 					}
 				],
@@ -73,10 +73,33 @@
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set liczony_dzien",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "liczony_dzien",
+					"value": {
+						"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"pierwszy_dzien_cyklu": {
+				"type": "String"
+			},
+			"liczony_dzien": {
 				"type": "String"
 			}
 		},
