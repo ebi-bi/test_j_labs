@@ -259,11 +259,11 @@
 				}
 			},
 			{
-				"name": "Web1",
-				"type": "WebActivity",
+				"name": "GetGodzinyDoUsuniecia",
+				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Pobierz Token",
+						"activity": "SH_GodzinySpecjaistow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -278,23 +278,70 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": {
-						"value": "@variables('http_rcp_items')",
-						"type": "Expression"
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'D' AND Kartoteka = 'GODZINY'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
-					"method": "DELETE",
-					"headers": {
-						"Authorization": {
-							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
-							"type": "Expression"
-						},
-						"content-type": "application/json",
-						"IF-MATCH": "*"
+					"dataset": {
+						"referenceName": "Output_rows",
+						"type": "DatasetReference"
 					},
-					"body": {
-						"value": "{\n\"IDERP\":\"1694\"\n}\n",
-						"type": "Expression"
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "PoPozycjachDoUIsuniecia",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetGodzinyDoUsuniecia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetGodzinyDoUsuniecia').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web_pozycjaRCP_usun",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@replace(variables('http_rcp_items'), '_XXX_', item().ID)",
+									"type": "Expression"
+								},
+								"method": "DELETE",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+										"type": "Expression"
+									},
+									"content-type": "application/json",
+									"IF-MATCH": "*"
+								},
+								"body": {
+									"value": "@item().text",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
@@ -305,7 +352,7 @@
 			},
 			"http_rcp_items": {
 				"type": "String",
-				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items(5292)"
+				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items(_XXX_)"
 			}
 		},
 		"annotations": []
