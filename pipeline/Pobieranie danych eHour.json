@@ -54,7 +54,7 @@
 					{
 						"activity": "Set pierwszy_dzien_cyklu",
 						"dependencyConditions": [
-							"Skipped"
+							"Succeeded"
 						]
 					}
 				],
@@ -156,6 +156,12 @@
 				"dependsOn": [
 					{
 						"activity": "Set godziny",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "BI_HOURS_Time_Strat",
 						"dependencyConditions": [
 							"Succeeded"
 						]
