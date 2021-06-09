@@ -24,8 +24,8 @@
 				}
 			},
 			{
-				"name": "GetKlienciNowi",
-				"type": "Lookup",
+				"name": "Web_TEST",
+				"type": "WebActivity",
 				"dependsOn": [
 					{
 						"activity": "Pobierz Token",
@@ -43,17 +43,23 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I'",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+					"url": {
+						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items",
+						"type": "Expression"
 					},
-					"dataset": {
-						"referenceName": "Output_rows",
-						"type": "DatasetReference"
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+							"type": "Expression"
+						},
+						"content-type": "application/json",
+						"IF-MATCH": "*"
 					},
-					"firstRowOnly": false
+					"body": {
+						"value": "{\"Title\": \"Arkadiusz Szczerba\", \"Waluta\": \"EUR\",\"Przychod\": \"2994.5600000\", \"suma_netto_pln\":\"13570.1481\",\"Godziny\":\"64.0000\",\"Projekt_ehouers\":\"SiSw AB SMS\",\"typ_projektu\":\"0\",\"Klient_ehouers\":\"Sinch Sweden AB\",\"User_ID\":\"USR207\",\"OddzialId\":\"3\",\"KlienciId\":\"9\",\"SpecjalistaId\":\"1669\",\"Kartoteka_uslugId\":\"115\",\"OkresId\":\"41\",\"ID_erp\":\"3376\"}          ",
+						"type": "Expression"
+					}
 				}
 			}
 		],
