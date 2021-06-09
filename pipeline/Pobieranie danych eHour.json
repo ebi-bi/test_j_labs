@@ -155,12 +155,6 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "BI_HOURS_Time_Strat",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Set godziny",
 						"dependencyConditions": [
 							"Succeeded"
