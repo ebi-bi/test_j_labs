@@ -263,7 +263,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "SH_GodzinySpecjaistow",
+						"activity": "SYNCHRO_GODZINY",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -402,7 +402,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "SH_GodzinySpecjaistow",
+						"activity": "SYNCHRO_GODZINY",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -428,6 +428,72 @@
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "SYNCHRO_GODZINY",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SH_GodzinySpecjaistow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_GODZINY_SPECJALISTOW]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "PoPozycjachDoUIsuniecia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "PoPozycjachDoModyfikacji",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KONIEC]",
+					"storedProcedureParameters": {
+						"Kartoteka": {
+							"value": "GODZINY",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
