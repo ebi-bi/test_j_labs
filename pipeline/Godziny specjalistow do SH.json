@@ -343,6 +343,59 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "PoPozycjachDoModyfikacji",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetGodzinyDoUsuniecia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetGodzinyDoUsuniecia').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web_pozycjaRCP_modyfikacja",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@replace(variables('http_rcp_items'), '_XXX_', item().ID)",
+									"type": "Expression"
+								},
+								"method": "PATCH",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+										"type": "Expression"
+									},
+									"content-type": "application/json",
+									"IF-MATCH": "*"
+								},
+								"body": {
+									"value": "@item().text",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
 		"variables": {
