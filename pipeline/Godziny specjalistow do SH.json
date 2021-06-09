@@ -458,7 +458,7 @@
 				}
 			},
 			{
-				"name": "Stored procedure1",
+				"name": "KoniecProcesu",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
