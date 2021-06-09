@@ -358,7 +358,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GetGodzinyDoUsuniecia').output.value",
+						"value": "@activity('GetGodzinyDoModyfikacji').output.value\n",
 						"type": "Expression"
 					},
 					"activities": [
