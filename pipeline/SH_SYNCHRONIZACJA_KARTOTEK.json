@@ -707,10 +707,7 @@
 					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KONIEC]",
 					"storedProcedureParameters": {
 						"Kartoteka": {
-							"value": {
-								"value": "'KLIENT'",
-								"type": "Expression"
-							},
+							"value": "KLIENT",
 							"type": "String"
 						}
 					}
