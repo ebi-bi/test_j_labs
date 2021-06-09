@@ -472,6 +472,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "PoPozycjachDoWstawienia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -486,7 +492,7 @@
 					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KONIEC]",
 					"storedProcedureParameters": {
 						"Kartoteka": {
-							"value": "GODZINY",
+							"value": "GODZINY1",
 							"type": "String"
 						}
 					}
@@ -494,6 +500,92 @@
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "GetGodzinyDoWstawienia",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SYNCHRO_GODZINY",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' AND Kartoteka = 'GODZINY'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Output_rows",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "PoPozycjachDoWstawienia",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetGodzinyDoWstawienia",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetGodzinyDoWstawienia').output.value\n",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web_pozycjaRCP_wstaw",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@variables('http_godzin')",
+									"type": "Expression"
+								},
+								"method": "POST",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+										"type": "Expression"
+									},
+									"content-type": "application/json",
+									"IF-MATCH": "*"
+								},
+								"body": {
+									"value": "@item().text",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
