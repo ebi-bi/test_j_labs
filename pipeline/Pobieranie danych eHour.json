@@ -157,13 +157,13 @@
 					{
 						"activity": "Set godziny",
 						"dependencyConditions": [
-							"Succeeded"
+							"Skipped"
 						]
 					},
 					{
 						"activity": "BI_HOURS_Time_Strat",
 						"dependencyConditions": [
-							"Succeeded"
+							"Skipped"
 						]
 					}
 				],
@@ -190,6 +190,25 @@
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Set godziny",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('godziny')",
+						"type": "Expression"
+					}
 				}
 			}
 		],
