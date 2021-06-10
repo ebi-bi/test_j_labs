@@ -1,0 +1,71 @@
+{
+	"name": "sql_Hours",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "daily",
+				"type": "nchar"
+			},
+			{
+				"name": "client_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "client_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "project_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "project_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "project_billable",
+				"type": "bit"
+			},
+			{
+				"name": "projest_manager",
+				"type": "nvarchar"
+			},
+			{
+				"name": "user_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "user_user",
+				"type": "nvarchar"
+			},
+			{
+				"name": "hours_hours",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 2
+			},
+			{
+				"name": "hours_approved",
+				"type": "nvarchar"
+			},
+			{
+				"name": "hours_entry_time",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "HOURS_Time"
+		}
+	}
+}
