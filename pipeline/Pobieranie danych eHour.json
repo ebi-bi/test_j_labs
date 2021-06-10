@@ -208,7 +208,22 @@
 					"items": {
 						"value": "@variables('godziny')",
 						"type": "Expression"
-					}
+					},
+					"activities": [
+						{
+							"name": "Set liczony_dzien_copy1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "liczony_dzien",
+								"value": {
+									"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
