@@ -52,6 +52,12 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
+						"activity": "Set liczony_dzien_temp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
 						"activity": "Set pierwszy_dzien_cyklu",
 						"dependencyConditions": [
 							"Succeeded"
@@ -75,7 +81,7 @@
 				}
 			},
 			{
-				"name": "Set liczony_dzien",
+				"name": "Set liczony_dzien_temp",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -87,7 +93,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "liczony_dzien",
+					"variableName": "liczony_dzien_temp",
 					"value": {
 						"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
 						"type": "Expression"
@@ -95,17 +101,152 @@
 				}
 			},
 			{
-				"name": "Get data eHour",
+				"name": "Single days",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "BI_HOURS_Time_Strat",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('pierwszy_dzien_cyklu'), variables('liczony_dzien'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Set liczony_dzien",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "liczony_dzien",
+								"value": {
+									"value": "@addDays(variables('liczony_dzien_temp'),-1,'yyyy-MM-dd')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set new  liczony_dzien_temp",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set liczony_dzien",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "liczony_dzien_temp",
+								"value": {
+									"value": "@variables('liczony_dzien')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Get data eHour",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Set new  liczony_dzien_temp",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "https://ehourapp.com/api/v1/report?start=@{variables('liczony_dzien')}&end=@{variables('liczony_dzien')}&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+								}
+							}
+						},
+						{
+							"name": "Set godziny",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Get data eHour",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "godziny",
+								"value": {
+									"value": "@activity('Get data eHour').output.data",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Hours_Time_Refresh",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Set godziny",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[adf].[Hours_Time_Refresh]",
+								"storedProcedureParameters": {
+									"godziny": {
+										"value": {
+											"value": "@string(variables('godziny'))",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "J_LABS_BI",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			},
+			{
+				"name": "Get data eHour_copy1",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Set liczony_dzien",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set pierwszy_dzien_cyklu",
+						"activity": "BI_HOURS_Time_Strat",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -129,102 +270,6 @@
 						"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
 					}
 				}
-			},
-			{
-				"name": "Set godziny",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get data eHour",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "godziny",
-					"value": {
-						"value": "@activity('Get data eHour').output.data",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Hours_Time_Refresh",
-				"type": "SqlServerStoredProcedure",
-				"dependsOn": [
-					{
-						"activity": "Set godziny",
-						"dependencyConditions": [
-							"Skipped"
-						]
-					},
-					{
-						"activity": "BI_HOURS_Time_Strat",
-						"dependencyConditions": [
-							"Skipped"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"storedProcedureName": "[adf].[Hours_Time_Refresh]",
-					"storedProcedureParameters": {
-						"godziny": {
-							"value": {
-								"value": "@string(variables('godziny'))",
-								"type": "Expression"
-							},
-							"type": "String"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Set godziny",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@variables('godziny')",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "Set liczony_dzien_copy1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "liczony_dzien",
-								"value": {
-									"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
-									"type": "Expression"
-								}
-							}
-						}
-					]
-				}
 			}
 		],
 		"variables": {
@@ -236,6 +281,9 @@
 			},
 			"godziny": {
 				"type": "Array"
+			},
+			"liczony_dzien_temp": {
+				"type": "String"
 			}
 		},
 		"annotations": []
