@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Pobierz Token",
-				"type": "WebActivity",
+				"name": "Copy data1",
+				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,46 +15,54 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
-					"method": "POST",
-					"headers": {
-						"content-type": "application/x-www-form-urlencoded"
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET"
 					},
-					"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
-				}
-			},
-			{
-				"name": "Web1",
-				"type": "WebActivity",
-				"dependsOn": [
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['data'][0][0]"
+								},
+								"sink": {
+									"name": "daily",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['data'][0][1]"
+								},
+								"sink": {
+									"name": "client_id",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
 					{
-						"activity": "Pobierz Token",
-						"dependencyConditions": [
-							"Succeeded"
-						]
+						"referenceName": "eHour",
+						"type": "DatasetReference"
 					}
 				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('testrest')/items",
-					"method": "POST",
-					"headers": {
-						"Authorization": {
-							"value": "@Bearer activity('Pobierz Token').output.access_token",
-							"type": "Expression"
-						},
-						"Accept": "application/json;odata=verbose",
-						"Content-Type": "application/json;odata=verbose"
-					},
-					"body": ""
-				}
+				"outputs": [
+					{
+						"referenceName": "sql_Hours",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
