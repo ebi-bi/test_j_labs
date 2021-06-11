@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Pobierz Token",
-				"type": "WebActivity",
+				"name": "Lookup1",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,50 +15,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
-					"method": "POST",
-					"headers": {
-						"content-type": "application/x-www-form-urlencoded"
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
 					},
-					"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
-				}
-			},
-			{
-				"name": "Web_TEST",
-				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "Pobierz Token",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": {
-						"value": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items",
-						"type": "Expression"
-					},
-					"method": "POST",
-					"headers": {
-						"Authorization": {
-							"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
-							"type": "Expression"
-						},
-						"content-type": "application/json",
-						"IF-MATCH": "*"
-					},
-					"body": {
-						"value": "{\"Title\": \"Arkadiusz Szczerba\", \"Waluta\": \"EUR\",\"Przychod\": \"2994.5600000\", \"suma_netto_pln\":\"13570.1481\",\"Godziny\":\"64.0000\",\"Projekt_ehouers\":\"SiSw AB SMS\",\"typ_projektu\":\"0\",\"Klient_ehouers\":\"Sinch Sweden AB\",\"User_ID\":\"USR207\",\"OddzialId\":\"3\",\"KlienciId\":\"9\",\"SpecjalistaId\":\"1669\",\"Kartoteka_uslugId\":\"115\",\"OkresId\":\"41\",\"ID_erp\":\"3376\"}          ",
-						"type": "Expression"
+					"dataset": {
+						"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+						"type": "DatasetReference"
 					}
 				}
 			}
