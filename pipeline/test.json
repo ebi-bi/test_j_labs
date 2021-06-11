@@ -30,16 +30,7 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['data'][0][0]"
-								},
-								"sink": {
-									"name": "daily",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['data'][0][1]"
+									"path": "$['data'][*][1]"
 								},
 								"sink": {
 									"name": "client_id",
