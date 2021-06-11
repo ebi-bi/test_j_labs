@@ -256,7 +256,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "sql_Hours",
+						"referenceName": "HOURS_Time",
 						"type": "DatasetReference"
 					}
 				]
