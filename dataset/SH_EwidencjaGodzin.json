@@ -1,0 +1,47 @@
+{
+	"name": "SH_EwidencjaGodzin",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Okres",
+				"type": "nchar"
+			},
+			{
+				"name": "SpecjalistaId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "KlientId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OkresId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Rodzaj h",
+				"type": "nchar"
+			},
+			{
+				"name": "Godziny",
+				"type": "nchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "adf",
+			"table": "SH_EwidencjaGodzinSpecjalistow"
+		}
+	}
+}

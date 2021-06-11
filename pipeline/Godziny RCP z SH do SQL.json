@@ -1,0 +1,108 @@
+{
+	"name": "Godziny RCP z SH do SQL",
+	"properties": {
+		"activities": [
+			{
+				"name": "Kopiowanie_godzin",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "SpecjalistaId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "SpecjalistaId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "KlientId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "KlientId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "OkresId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "OkresId",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Godziny",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Rodzaj h",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ComplianceAssetId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Godziny",
+									"type": "String",
+									"physicalType": "nchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "GodzintRcpSpecjalistow",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SH_EwidencjaGodzin",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
