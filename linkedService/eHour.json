@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://ehourapp.com/api/v1/report-kv",
+			"url": "https://ehourapp.com/api/v1",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
