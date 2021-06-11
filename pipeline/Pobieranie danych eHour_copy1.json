@@ -1,0 +1,156 @@
+{
+	"name": "Pobieranie danych eHour_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get pierwszy_dzien_cyklu",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT TOP 1 [ID]\n      ,[eHouer]\n      ,[CRM]\n      ,[ERP_Optima]\n      ,[Data_ladowania]\n      ,[eHouer_mc]\n      ,[CRM_mc]\n      ,[ERP_Optima_mc]\n  FROM [dbo].[Config_IncrementDate]\n  where ID = 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Config_IncrementDate",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set pierwszy_dzien_cyklu",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pierwszy_dzien_cyklu",
+					"value": {
+						"value": "@substring(activity('Get pierwszy_dzien_cyklu').output.firstRow.eHouer,0,10)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set ostatni_dzien_cyklu",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ostatni_dzien_cyklu",
+					"value": {
+						"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set pierwszy_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set ostatni_dzien_cyklu",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"additionalHeaders": {
+							"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['data'][*][1]"
+								},
+								"sink": {
+									"name": "client_id",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['data']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "eHour",
+						"type": "DatasetReference",
+						"parameters": {
+							"pierwszy_dzien_cyklu": {
+								"value": "@variables('pierwszy_dzien_cyklu')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "sql_Hours",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"variables": {
+			"pierwszy_dzien_cyklu": {
+				"type": "String"
+			},
+			"ostatni_dzien_cyklu": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
