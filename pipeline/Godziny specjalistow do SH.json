@@ -257,7 +257,7 @@
 					"storedProcedureName": "[adf].[SYNCHRONIZACJA_SH_KONIEC]",
 					"storedProcedureParameters": {
 						"Kartoteka": {
-							"value": "GODZINY1",
+							"value": "GODZINY",
 							"type": "String"
 						}
 					}
