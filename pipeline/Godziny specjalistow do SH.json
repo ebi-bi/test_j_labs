@@ -389,7 +389,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "CzyListaPusta",
+						"activity": "FirstRoiwList",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -398,7 +398,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@contains(activity('CzyListaPusta').output, '{}')",
+						"value": "@contains(variables('FirstRowList'),'{}')",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -632,6 +632,26 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "FirstRoiwList",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "CzyListaPusta",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "FirstRowList",
+					"value": {
+						"value": "@string(activity('CzyListaPusta').output.firstRow)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -642,6 +662,9 @@
 			"http_rcp_items": {
 				"type": "String",
 				"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items(_XXX_)"
+			},
+			"FirstRowList": {
+				"type": "String"
 			}
 		},
 		"annotations": []
