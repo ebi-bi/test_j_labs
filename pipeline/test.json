@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SharePointOnlineListSource",
-						"query": "$top=10&$select=Waluta",
+						"query": "$top=1",
 						"httpRequestTimeout": "00:05:00"
 					},
 					"dataset": {
@@ -41,7 +41,7 @@
 				"typeProperties": {
 					"variableName": "czyListaPusta",
 					"value": {
-						"value": "@activity('Lookup1').output.firstRow.Waluta",
+						"value": "@string(activity('Lookup1').output.firstRow)",
 						"type": "Expression"
 					}
 				}
