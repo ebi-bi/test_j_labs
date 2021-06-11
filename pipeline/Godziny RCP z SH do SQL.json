@@ -21,7 +21,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE SH_EwidencjaGodzinSpecjalistow"
+						"preCopyScript": "TRUNCATE TABLE ADF.SH_EwidencjaGodzinSpecjalistow"
 					},
 					"enableStaging": false,
 					"translator": {
