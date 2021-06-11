@@ -2,7 +2,7 @@
 	"name": "eHour",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "RestService1",
+			"referenceName": "eHour",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
