@@ -8,6 +8,9 @@
 		"parameters": {
 			"pierwszy_dzien_cyklu": {
 				"type": "string"
+			},
+			"ostatni_dzien_cyklu": {
+				"type": "string"
 			}
 		},
 		"folder": {
