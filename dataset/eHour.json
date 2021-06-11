@@ -5,6 +5,9 @@
 			"referenceName": "RestService1",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
 		"annotations": [],
 		"type": "RestResource",
 		"schema": []
