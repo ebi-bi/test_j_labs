@@ -370,7 +370,7 @@
 				]
 			},
 			{
-				"name": "Stored procedure1",
+				"name": "SH_Ewidencja_godzin_STOP",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
