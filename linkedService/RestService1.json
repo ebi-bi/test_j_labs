@@ -1,19 +1,13 @@
 {
 	"name": "RestService1",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://ehourapp.com/api/v1/report?start=2021-05-01&end=2021-06-30&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
+			"url": "https://ehourapp.com/api/v1/report-kv?start=2021-05-01&end=2021-06-30&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
 			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous",
-			"authHeaders": {
-				"X-API-Key": {
-					"type": "SecureString",
-					"value": "**********"
-				}
-			}
+			"authenticationType": "Anonymous"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
