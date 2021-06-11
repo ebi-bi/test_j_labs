@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "Lookup1",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -16,46 +16,91 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET"
+						"type": "SharePointOnlineListSource",
+						"query": "$top=10&$select=Title",
+						"httpRequestTimeout": "00:05:00"
 					},
-					"sink": {
-						"type": "SqlServerSink"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['data'][*][1]"
-								},
-								"sink": {
-									"name": "client_id",
-									"type": "String"
-								}
-							}
-						],
-						"collectionReference": "$['data']",
-						"mapComplexValuesToString": true
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "eHour",
+					"dataset": {
+						"referenceName": "GodzintRcpSpecjalistow",
 						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
-				"outputs": [
-					{
-						"referenceName": "sql_Hours",
-						"type": "DatasetReference"
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "czyListaPusta",
+					"value": {
+						"value": "@activity('Lookup1').output.firstRow.Title",
+						"type": "Expression"
 					}
-				]
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(variables('czyListaPusta'),'null')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "nie ma nulla",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "czyListaPusta",
+								"value": {
+									"value": "nie ma",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Jest null",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "czyListaPusta",
+								"value": {
+									"value": "jest null",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"czyListaPusta": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
