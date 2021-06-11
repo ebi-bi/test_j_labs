@@ -5,14 +5,7 @@
 			{
 				"name": "SH_GodzinySpecjaistow",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Pobierz Token",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -433,14 +426,7 @@
 			{
 				"name": "SYNCHRO_GODZINY",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [
-					{
-						"activity": "SH_GodzinySpecjaistow",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -584,6 +570,286 @@
 									"type": "Expression"
 								}
 							}
+						}
+					]
+				}
+			},
+			{
+				"name": "CzyListaPusta",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Pobierz Token",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"query": "$top=1",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"dataset": {
+						"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "JesliListaPusta",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "CzyListaPusta",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(activity('CzyListaPusta').output, '{}')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "SH_GodzinySpecjaistow_copy1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SharePointOnlineListSource",
+									"httpRequestTimeout": "00:05:00"
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"preCopyScript": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "Identyfikator",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "ID",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "Tytuł",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Title",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "OkresId",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "OkresId",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "SpecjalistaId",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "SpecjalistaId",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "KlienciId",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "KlienciId",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "Projekt_ehouers",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Projekt_ehouers",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Typ_projektu",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Typ_projektu",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "Klient_ehouers",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Klient_ehouers",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "OddzialId",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "OddzialId",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "Waluta",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Waluta",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Godziny",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Godziny",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 4,
+												"precision": 20
+											}
+										},
+										{
+											"source": {
+												"name": "Przychod",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Przychod",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 7,
+												"precision": 38
+											}
+										},
+										{
+											"source": {
+												"name": "User_ID",
+												"type": "String"
+											},
+											"sink": {
+												"name": "User_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Kartoteka_uslugId",
+												"type": "Int32"
+											},
+											"sink": {
+												"name": "Kartoteka_uslugId",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "ID_erp",
+												"type": "String"
+											},
+											"sink": {
+												"name": "ID_ERP",
+												"type": "Int32",
+												"physicalType": "int"
+											}
+										},
+										{
+											"source": {
+												"name": "Suma_netto_pln",
+												"type": "Double"
+											},
+											"sink": {
+												"name": "Suma_netto_pln",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 4,
+												"precision": 20
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ADF__GodznySpecjalistowSlownik",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}
