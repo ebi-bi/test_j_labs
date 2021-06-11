@@ -3,53 +3,16 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DaneRCPOd",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "DataRCPOd",
-						"type": "DatasetReference"
-					}
-				}
-			},
-			{
-				"name": "Dane finansowe ERP",
+				"name": "Pobieranie danych z CRM",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "DaneRCPOd",
+						"activity": "Okresy  obrachunkowe i finanse",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "Okresy obrachunkowe oraz Finanse ERP",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Pobieranie danych z CRM",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -62,7 +25,14 @@
 			{
 				"name": "Pobieranie danych NBP",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Okresy  obrachunkowe i finanse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -75,7 +45,14 @@
 			{
 				"name": "Pobieranie godzin specjalistow",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Okresy  obrachunkowe i finanse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -88,7 +65,14 @@
 			{
 				"name": "Godziny specjalistow do SH",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Obliczanie rentownosci",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -101,7 +85,32 @@
 			{
 				"name": "Obliczanie rentownosci",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "SH Synchronizacja kartotek",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Pobieranie danych z CRM",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Pobieranie danych NBP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Pobieranie godzin specjalistow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
@@ -119,6 +128,26 @@
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "Okresy obrachunkowe oraz Finanse ERP",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SH Synchronizacja kartotek",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Okresy  obrachunkowe i finanse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SH_SYNCHRONIZACJA_KARTOTEK",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
