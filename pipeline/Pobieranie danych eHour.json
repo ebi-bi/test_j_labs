@@ -264,7 +264,14 @@
 			{
 				"name": "Kopiowanie_godzin",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "BI_HOURS_Time_Strat",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
