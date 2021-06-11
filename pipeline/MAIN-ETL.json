@@ -27,7 +27,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Pobieranie godzin specjalistow",
+						"activity": "Okresy  obrachunkowe i finanse",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -47,7 +47,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Okresy  obrachunkowe i finanse",
+						"activity": "SH Synchronizacja kartotek",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -87,12 +87,6 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "SH Synchronizacja kartotek",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Pobieranie danych z CRM",
 						"dependencyConditions": [
 							"Succeeded"
@@ -100,6 +94,12 @@
 					},
 					{
 						"activity": "Pobieranie danych NBP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Pobieranie godzin specjalistow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
