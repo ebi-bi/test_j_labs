@@ -104,7 +104,7 @@
 				]
 			},
 			{
-				"name": "Stored procedure1",
+				"name": "SH_GodzinySpecjalistow_STOP",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
