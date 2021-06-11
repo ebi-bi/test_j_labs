@@ -17,6 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SharePointOnlineListSource",
+						"query": "$top=10&$select=Title",
 						"httpRequestTimeout": "00:05:00"
 					},
 					"dataset": {
