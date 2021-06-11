@@ -17,11 +17,11 @@
 				"typeProperties": {
 					"source": {
 						"type": "SharePointOnlineListSource",
-						"query": "$top=10&$select=Title",
+						"query": "$top=10&$select=Waluta",
 						"httpRequestTimeout": "00:05:00"
 					},
 					"dataset": {
-						"referenceName": "GodzintRcpSpecjalistow",
+						"referenceName": "Pozycje_zlecen_fakturowania_slownik",
 						"type": "DatasetReference"
 					}
 				}
@@ -41,7 +41,7 @@
 				"typeProperties": {
 					"variableName": "czyListaPusta",
 					"value": {
-						"value": "@activity('Lookup1').output.firstRow.Title",
+						"value": "@activity('Lookup1').output.firstRow.Waluta",
 						"type": "Expression"
 					}
 				}
@@ -60,7 +60,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(length(activity('Lookup1').output.firstRow),0)",
+						"value": "@contains(variables('czyListaPusta'),'null')",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
