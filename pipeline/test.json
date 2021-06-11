@@ -60,7 +60,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@contains(variables('czyListaPusta'),'null')",
+						"value": "@equals(length(activity('Lookup1').output.firstRow),0)",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
