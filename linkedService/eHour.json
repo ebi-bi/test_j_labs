@@ -1,0 +1,12 @@
+{
+	"name": "eHour",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://ehourapp.com/api/v1/report-kv",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
