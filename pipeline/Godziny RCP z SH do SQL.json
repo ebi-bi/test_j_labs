@@ -62,8 +62,8 @@
 							},
 							{
 								"source": {
-									"name": "Godziny",
-									"type": "Double"
+									"name": "RodzajHValue",
+									"type": "String"
 								},
 								"sink": {
 									"name": "Rodzaj h",
@@ -73,8 +73,8 @@
 							},
 							{
 								"source": {
-									"name": "ComplianceAssetId",
-									"type": "String"
+									"name": "Godziny",
+									"type": "Double"
 								},
 								"sink": {
 									"name": "Godziny",
