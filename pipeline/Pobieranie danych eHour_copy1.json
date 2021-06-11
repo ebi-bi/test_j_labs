@@ -237,7 +237,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"pierwszy_dzien_cyklu": {
-								"value": "@variables('pierwszy_dzien_cyklu')",
+								"value": "2021-04-01",
 								"type": "Expression"
 							},
 							"ostatni_dzien_cyklu": {
