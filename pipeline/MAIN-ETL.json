@@ -27,7 +27,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Okresy  obrachunkowe i finanse",
+						"activity": "Pobieranie godzin specjalistow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -100,12 +100,6 @@
 					},
 					{
 						"activity": "Pobieranie danych NBP",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Pobieranie godzin specjalistow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
