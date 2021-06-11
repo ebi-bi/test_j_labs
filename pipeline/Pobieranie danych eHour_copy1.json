@@ -68,7 +68,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "Copy eHour to SQL",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -111,7 +111,115 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['data'][*][1]"
+									"path": "['hours-hours']"
+								},
+								"sink": {
+									"name": "hours_hours",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['project-billable']"
+								},
+								"sink": {
+									"name": "project_billable",
+									"type": "Boolean"
+								}
+							},
+							{
+								"source": {
+									"path": "['project-name']"
+								},
+								"sink": {
+									"name": "project_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['user-id']"
+								},
+								"sink": {
+									"name": "user_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['hours-approved']"
+								},
+								"sink": {
+									"name": "hours_approved",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['client-name']"
+								},
+								"sink": {
+									"name": "client_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['hours-entry-time']"
+								},
+								"sink": {
+									"name": "hours_entry_time",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['user-user']"
+								},
+								"sink": {
+									"name": "user_user",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['client-code']"
+								},
+								"sink": {
+									"name": "client_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['daily']"
+								},
+								"sink": {
+									"name": "daily",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['project-code']"
+								},
+								"sink": {
+									"name": "project_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['project-manager']"
+								},
+								"sink": {
+									"name": "projest_manager",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['client-id']"
 								},
 								"sink": {
 									"name": "client_id",
