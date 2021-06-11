@@ -1,5 +1,5 @@
 {
-	"name": "sql_Hours",
+	"name": "HOURS_Time",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "J_LABS_BI",
@@ -64,7 +64,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "adf",
+			"schema": "dbo",
 			"table": "HOURS_Time"
 		}
 	}
