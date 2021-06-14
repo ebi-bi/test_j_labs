@@ -47,7 +47,7 @@
 				}
 			},
 			{
-				"name": "Zamowienia",
+				"name": "Klienci",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -75,17 +75,17 @@
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
 					"body": {
-						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_CustomerOrders\",\n\"query\": \"ev_customerorders.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' \",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"account_id\",\"deleted\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"1000\",\n\t\"deleted\": 1\n}\n",
+						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"Accounts\",\n\"query\": \"accounts.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' \",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\", \"name\",\"assigned_user_name\",\"sales_stage\",\"erp_id\"],\n\t\"link_name_to_fields_array\": [\"ev_customerorders_accounts\"],\n\t\"max_results\": \"500\",\n\t\"deleted\": 0\n}\n",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "Zamowienia to SQL",
+				"name": "Klienci to SQL",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Set zamowienia",
+						"activity": "Set klienci",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -100,11 +100,11 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[adf].[CRM_Zamowienia_Refresh]",
+					"storedProcedureName": "[adf].[CRM_Klienci_Refresh]",
 					"storedProcedureParameters": {
-						"zamowienia": {
+						"klienci": {
 							"value": {
-								"value": "@string(variables('zamowienia'))",
+								"value": "@string(variables('klienci'))",
 								"type": "Expression"
 							},
 							"type": "String"
@@ -117,11 +117,11 @@
 				}
 			},
 			{
-				"name": "Set zamowienia",
+				"name": "Set klienci",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Zamowienia",
+						"activity": "Klienci",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -129,19 +129,19 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "zamowienia",
+					"variableName": "klienci",
 					"value": {
-						"value": "@activity('Zamowienia').output.entry_list",
+						"value": "@activity('Klienci').output.entry_list",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "BI_zamowienia_stop",
+				"name": "Stored procedure1",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Zamowienia to SQL",
+						"activity": "Klienci to SQL",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -156,7 +156,13 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[BI_Zamowienia_Stop]"
+					"storedProcedureName": "[adf].[CRM_Klienci_Refresh]",
+					"storedProcedureParameters": {
+						"klienci": {
+							"value": "",
+							"type": "String"
+						}
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
@@ -177,9 +183,12 @@
 			},
 			"dniDoTylu": {
 				"type": "String",
-				"defaultValue": "7"
+				"defaultValue": "60"
 			},
 			"zamowienia": {
+				"type": "Array"
+			},
+			"klienci": {
 				"type": "Array"
 			}
 		},
