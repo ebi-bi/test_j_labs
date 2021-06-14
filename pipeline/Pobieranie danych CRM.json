@@ -265,6 +265,24 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
+						"activity": "BI_Pozycje_Zam_Stop",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "BI_zamowienia_stop",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "BI_Klienci_Stop",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
 						"activity": "Stawki specjalistow to SQL",
 						"dependencyConditions": [
 							"Succeeded"
