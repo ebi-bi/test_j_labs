@@ -682,6 +682,9 @@
 			},
 			"zamowienia": {
 				"type": "Array"
+			},
+			"klienci": {
+				"type": "Array"
 			}
 		},
 		"annotations": []
