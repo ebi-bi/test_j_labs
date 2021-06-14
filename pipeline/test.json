@@ -156,13 +156,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[BI_Klienci_Stop]",
-					"storedProcedureParameters": {
-						"klienci": {
-							"value": "",
-							"type": "String"
-						}
-					}
+					"storedProcedureName": "[dbo].[BI_Klienci_Stop]"
 				},
 				"linkedServiceName": {
 					"referenceName": "J_LABS_BI",
