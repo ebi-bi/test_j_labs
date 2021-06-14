@@ -87,6 +87,10 @@
 			},
 			"Login": {
 				"type": "String"
+			},
+			"URL_CRM": {
+				"type": "String",
+				"defaultValue": "https://jlabs.evolpe.it/service/v4_1/rest.php"
 			}
 		},
 		"annotations": []
