@@ -115,7 +115,7 @@
 					{
 						"activity": "Kursy to SQL",
 						"dependencyConditions": [
-							"Skipped"
+							"Succeeded"
 						]
 					}
 				],
