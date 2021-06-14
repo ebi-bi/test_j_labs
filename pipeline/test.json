@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
-				"type": "Lookup",
+				"name": "Login",
+				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,23 +15,23 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "SharePointOnlineListSource",
-						"query": "$top=1",
-						"httpRequestTimeout": "00:05:00"
+					"url": {
+						"value": "@variables('URL_CRM')",
+						"type": "Expression"
 					},
-					"dataset": {
-						"referenceName": "Pozycje_zlecen_fakturowania_slownik",
-						"type": "DatasetReference"
-					}
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set ID",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Login",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -39,65 +39,53 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "czyListaPusta",
+					"variableName": "Login",
 					"value": {
-						"value": "@string(activity('Lookup1').output.firstRow)",
+						"value": "@activity('Login').output.id",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "If Condition1",
-				"type": "IfCondition",
+				"name": "Stawki specjalistow",
+				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Set ID",
 						"dependencyConditions": [
-							"Succeeded"
+							"Skipped"
 						]
 					}
 				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"expression": {
-						"value": "@contains(variables('czyListaPusta'),'null')",
+					"url": {
+						"value": "@variables('URL_CRM')",
 						"type": "Expression"
 					},
-					"ifFalseActivities": [
-						{
-							"name": "nie ma nulla",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "czyListaPusta",
-								"value": {
-									"value": "nie ma",
-									"type": "Expression"
-								}
-							}
-						}
-					],
-					"ifTrueActivities": [
-						{
-							"name": "Jest null",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "czyListaPusta",
-								"value": {
-									"value": "jest null",
-									"type": "Expression"
-								}
-							}
-						}
-					]
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": {
+						"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_CustomerOrders\",\n\"query\": \"ev_contractsofemployment.date_modified>'@{getPastTime(int(variables('dniDoTylu')), 'Day', 'yyyy-MM-ddTHH:mm:ss')}' \",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"account_id\",\"deleted\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"1000\",\n\t\"deleted\": 1\n}\n}",
+						"type": "Expression"
+					}
 				}
 			}
 		],
 		"variables": {
 			"czyListaPusta": {
+				"type": "String"
+			},
+			"Login": {
 				"type": "String"
 			}
 		},
