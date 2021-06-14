@@ -47,7 +47,7 @@
 				}
 			},
 			{
-				"name": "Stawki specjalistow",
+				"name": "Zamowienia",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -91,6 +91,10 @@
 			"URL_CRM": {
 				"type": "String",
 				"defaultValue": "https://jlabs.evolpe.it/service/v4_1/rest.php"
+			},
+			"dniDoTylu": {
+				"type": "String",
+				"defaultValue": "7"
 			}
 		},
 		"annotations": []
