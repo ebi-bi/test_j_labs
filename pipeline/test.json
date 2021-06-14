@@ -137,7 +137,7 @@
 				}
 			},
 			{
-				"name": "Stored procedure1",
+				"name": "BI_Klienci_Stop",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -156,7 +156,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[adf].[CRM_Klienci_Refresh]",
+					"storedProcedureName": "[dbo].[BI_Klienci_Stop]",
 					"storedProcedureParameters": {
 						"klienci": {
 							"value": "",
