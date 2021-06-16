@@ -4,24 +4,40 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Nazwa fabryki danych",
+			"metadata": "Data Factory name",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
 		"SharePoint_JLabs_servicePrincipalKey": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs”"
+			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs'"
+		},
+		"SharePoint_JLabs_ZleceniaFV_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs_ZleceniaFV'"
 		},
 		"J_LABS_BI_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
+			"metadata": "Secure string for 'connectionString' of 'J_LABS_BI'"
 		},
 		"J_LABS_BI_password": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
+			"metadata": "Secure string for 'password' of 'J_LABS_BI'"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ehourapp.com/api/v1/report-kv?start=2021-05-01&end=2021-06-30&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME"
 		},
 		"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
+		},
+		"SharePoint_JLabs_ZleceniaFV_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
+		},
+		"eHour_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ehourapp.com/api/v1"
 		},
 		"J_LABS_BI_properties_typeProperties_userName": {
 			"type": "string",
@@ -32,6 +48,518 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1_WT')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Pobierz Token",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "If Condition1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
+							"method": "POST",
+							"headers": {
+								"content-type": "application/x-www-form-urlencoded"
+							},
+							"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
+						}
+					},
+					{
+						"name": "prod",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Produkcja",
+							"value": {
+								"value": "0",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "zm_str",
+							"value": {
+								"value": "'ss'",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "prod",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('Produkcja')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"variables": {
+					"zm_str": {
+						"type": "String",
+						"defaultValue": "123"
+					},
+					"z_uri": {
+						"type": "String",
+						"defaultValue": "Https://jsj.items(_XXX_)"
+					},
+					"id": {
+						"type": "String",
+						"defaultValue": "118"
+					},
+					"http_klienci": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items"
+					},
+					"http_klienci_modyf": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(_XXX_)"
+					},
+					"http_run": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(118)"
+					},
+					"Produkcja": {
+						"type": "Boolean"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Call dataset refresh",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get AAD Token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://api.powerbi.com/v1.0/myorg/groups/',pipeline().parameters.workspaceGuid,'/datasets/',pipeline().parameters.datasetGuid,'/refreshes')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Authorization": {
+									"value": "@concat(string(activity('Get AAD Token').output.token_type),' ',string(activity('Get AAD Token').output.access_token))",
+									"type": "Expression"
+								}
+							},
+							"body": {
+								"notifyOption": "NoNotification"
+							}
+						}
+					},
+					{
+						"name": "Until dataset refresh completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Call dataset refresh",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(equals(first(json(string(activity('Get dataset refresh status').output)).value).status,'Unknown'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Wait 15 seconds",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 15
+									}
+								},
+								{
+									"name": "Get dataset refresh status",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Wait 15 seconds",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": true
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@concat('https://api.powerbi.com/v1.0/myorg/groups/',pipeline().parameters.workspaceGuid,'/datasets/',pipeline().parameters.datasetGuid,'/refreshes?$top=1')",
+											"type": "Expression"
+										},
+										"method": "GET",
+										"headers": {
+											"Authorization": {
+												"value": "@concat(string(activity('Get AAD Token').output.token_type),' ',string(activity('Get AAD Token').output.access_token))",
+												"type": "Expression"
+											},
+											"Content-Type": "application/json"
+										}
+									}
+								}
+							],
+							"timeout": "0.03:00:00"
+						}
+					},
+					{
+						"name": "If dataset refresh failed",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Until dataset refresh completion",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(first(json(string(activity('Get dataset refresh status').output)).value).status,'Failed')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "SaveErrorMessages",
+									"description": "In case of an error in processing of the dataset, the actual messages are saved in the pipeline variable \"ProcessingErrors\".",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "ProcessingErrors",
+										"value": {
+											"value": "@string(json(first(json(string(activity('Get dataset refresh status').output)).value).serviceExceptionJson))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Get AAD Token",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get Secret from AKV",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get ClientId from AKV",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get TenantId from AKV",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://login.microsoftonline.com/',activity('Get TenantId from AKV').output.value,'/oauth2/token')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							"body": {
+								"value": "@concat('grant_type=client_credentials&resource=https://analysis.windows.net/powerbi/api&client_id=',activity('Get ClientId from AKV').output.value,'&client_secret=',encodeUriComponent(activity('Get Secret from AKV').output.value))",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Get TenantId from AKV",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','TenantId/',pipeline().parameters.SecretName_TenantId,'/?api-version=7.0')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"body": {
+								"simple": "body"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "Get ClientId from AKV",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"body": {
+								"simple": "body"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "Get Secret from AKV",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"body": {
+								"simple": "body"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"SecretName_TenantId": {
+						"type": "String",
+						"defaultValue": "d962e2f4920d483583b6e915838135cc"
+					},
+					"SecretName_SPClientId": {
+						"type": "String",
+						"defaultValue": "8dbdeabd355246b1b37a256f47fe4dc2"
+					},
+					"SecretName_SPSecret": {
+						"type": "String",
+						"defaultValue": "541e4a8ecb104817b484feb739c41190"
+					},
+					"KeyVaultDNSName": {
+						"type": "string",
+						"defaultValue": "https://optimadevtestlab14902.vault.azure.net/t"
+					},
+					"workspaceGuid": {
+						"type": "string"
+					},
+					"datasetGuid": {
+						"type": "string",
+						"defaultValue": "87bb298a-9b99-4ac6-bb46-d493e7fa24f9"
+					}
+				},
+				"variables": {
+					"ProcessingErrors": {
+						"type": "Boolean"
+					}
+				},
+				"folder": {
+					"name": "50-powerbi"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/testrtwrtes')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get AAD Token",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://login.microsoftonline.com/','b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8','/oauth2/token')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							"body": {
+								"value": "@concat('grant_type=client_credentials&resource=https://analysis.windows.net/powerbi/api&client_id=e23b40fb-5c5a-483b-af6c-48cbdb987ee4&client_secret=0CY-ej-qO28eEz5at6-f.l_dAT_MEQou98')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Call dataset refresh",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Get AAD Token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://api.powerbi.com/v1.0/myorg/groups/fcc8bff5-39d4-46d5-b239-0083d93c81f9/datasets/87bb298a-9b99-4ac6-bb46-d493e7fa24f9/refreshes')",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {
+								"Authorization": {
+									"value": "@concat(string(activity('Get AAD Token').output.token_type),' ',string(activity('Get AAD Token').output.access_token))",
+									"type": "Expression"
+								}
+							},
+							"body": {
+								"notifyOption": "NoNotification"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService1_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -47,6 +575,40 @@
 						"type": "SecureString",
 						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SharePoint_JLabs_ZleceniaFV')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SharePointOnlineList",
+				"typeProperties": {
+					"siteUrl": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice",
+					"tenantId": "b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8",
+					"servicePrincipalId": "[parameters('SharePoint_JLabs_ZleceniaFV_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('SharePoint_JLabs_ZleceniaFV_servicePrincipalKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/eHour')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('eHour_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
 				}
 			},
 			"dependsOn": []
@@ -107,6 +669,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/GodzintRcpSpecjalistow')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "EwidencjaGodzin"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Klienci_SH')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -153,6 +738,132 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Pozycje_zlecen_fakturowania_slownik')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs_ZleceniaFV",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Pozycje_zleceniaSlownik"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs_ZleceniaFV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SH_SPECJALISCI')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Specjalista"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SharePointOnlineListResource1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs_ZleceniaFV",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane pomocnicze"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Klienci"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs_ZleceniaFV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Uslugi_SH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "Kartoteka_produktow"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/eHour')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "eHour",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pierwszy_dzien_cyklu": {
+						"type": "string"
+					},
+					"ostatni_dzien_cyklu": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Dane pomocnicze"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "report-kv?start=@{dataset().pierwszy_dzien_cyklu}&end=@{dataset().ostatni_dzien_cyklu}&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/eHour')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/J_LABS_BI')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -178,894 +889,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Wywołanie procedury wyliczającej rentowność specjalistów",
-				"activities": [
-					{
-						"name": "Rentownosc_specjalistow",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_RentownoscSpecjalistow_TEST]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Pobieranie danych CRM')]",
+			"name": "[concat(parameters('factoryName'), '/DO_SH')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Login",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@variables('URL_CRM')",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/x-www-form-urlencoded"
-							},
-							"body": "method=login&input_type=JSON&response_type=JSON&rest_data={\n\t\"user_auth\": {\n\t\t\"user_name\": \"e-bi@j-labs.pl\",\n\t\t\"password\": \"ad4aaf1201de75ddd408eeb16dfe7cbe\"\n\t},\n\t\"application_name\": \"MS Flow\",\n\t\"name_value_list\": []\n}"
-						}
-					},
-					{
-						"name": "Set ID",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Login",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "Login",
-							"value": {
-								"value": "@activity('Login').output.id",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Specjalisci",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Set ID",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@variables('URL_CRM')",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/x-www-form-urlencoded"
-							},
-							"body": {
-								"value": "method=get_entry_list&input_type=JSON&response_type=JSON&rest_data={\n\t\"session\": \"@{variables('Login')}\",\n\"module_name\": \"ev_Specialists\",\n\"query\": \"ev_specialists.date_modified>'@{getPastTime(30, 'Day', 'yyyy-MM-ddTHH:mm:ss')}' and ev_specialists.specialist_status<>'candidate' and ev_specialists.specialist_status<>'candidate_in_process'\",\n\t\"order_by\": \"date_modified\",\n\t\"offset\": 0,\n\t\"select_fields\": [\"id\",\"first_name\",\"last_name\",\"approximate_address_city\",\"approximate_address_state\",\"position,candidate_experience\",\"specialist_status\",\"recruitment_status\",\"reference_rate,name\",\"erp_id\"],\n\t\"link_name_to_fields_array\": [],\n\t\"max_results\": \"600\",\n\t\"deleted\": 0\n}",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Specjalisci",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Specjalisci",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "Specjalisci",
-							"value": {
-								"value": "@activity('Specjalisci').output.entry_list",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Specjalisci to SQL",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "Set Specjalisci",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[adf].[CRM_Dim_Pracownicy_Refresh]",
-							"storedProcedureParameters": {
-								"specjalisci": {
-									"value": {
-										"value": "@string(variables('Specjalisci'))",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Set Specjalisci",
-								"dependencyConditions": [
-									"Skipped"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@variables('Specjalisci')",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Specjalisci to SQL_copy1",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[adf].[CRM_Dim_Pracownicy_Refresh]",
-										"storedProcedureParameters": {
-											"specjalisci": {
-												"value": {
-													"value": "@string(array(item()))",
-													"type": "Expression"
-												},
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "J_LABS_BI",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"variables": {
-					"Login": {
-						"type": "String"
-					},
-					"URL_CRM": {
-						"type": "String",
-						"defaultValue": "https://jlabs.evolpe.it/service/v4_1/rest.php"
-					},
-					"Specjalisci": {
-						"type": "Array"
-					},
-					"Specjalista": {
-						"type": "Array"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DataRCPOd')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane pomocnicze"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "eHouer",
-						"type": "date"
-					},
-					{
-						"name": "CRM",
-						"type": "date"
-					},
-					{
-						"name": "ERP_Optima",
-						"type": "date"
-					},
-					{
-						"name": "Data_ladowania",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "eHouer_mc",
-						"type": "nchar"
-					},
-					{
-						"name": "CRM_mc",
-						"type": "nchar"
-					},
-					{
-						"name": "ERP_Optima_mc",
-						"type": "nchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Config_IncrementDate"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SH_Faktury_Klientow')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane w bazie BI SQL"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Okres",
-						"type": "nchar"
-					},
-					{
-						"name": "Nr_FV",
-						"type": "nchar"
-					},
-					{
-						"name": "ID_uslugi",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_ERP",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Ilosc",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "JM",
-						"type": "nchar"
-					},
-					{
-						"name": "Cena",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "Wartosc",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "DataDokumentu",
-						"type": "date"
-					},
-					{
-						"name": "Data_ladowania",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SH_FakturySprzedazy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SH_OkresyObrachunkowe')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane w bazie BI SQL"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "nchar"
-					},
-					{
-						"name": "Miesiac",
-						"type": "nchar"
-					},
-					{
-						"name": "Otwarte?",
-						"type": "nchar"
-					},
-					{
-						"name": "Data_ladowanie",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Godziny_normatywne",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Korekta_stawki_APO",
-						"type": "decimal",
-						"precision": 10,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "SH_Okres_obrachunkowy"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/temp_map_klienci')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "J_LABS_BI",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dane pomocnicze"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ERP_ID",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "adf",
-					"table": "map_sh_Klienci"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Okresy obrachunkowe oraz Finanse ERP')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
-				"activities": [
-					{
-						"name": "Ekstrakcja danych z ERP-Optima",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "OkresyObrachunkowe_copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Mapowanie klientow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Faktury spprzedazy SH - Copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[adf].[Load_OPTIMA_ERP]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "OkresyObrachunkowe_copy",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Id",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "ID",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Title",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Miesiac",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "StatusOtwartyZamknięty",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "Otwarte?",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "GodzinyNormatywne",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Godziny_normatywne",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "Korekta_stawki_APO",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Korekta_stawki_APO",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 10
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Okresy_obrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SH_OkresyObrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Mapowanie klientow",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Id",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "IDERP",
-											"type": "String"
-										},
-										"sink": {
-											"name": "ERP_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Klienci_SH",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "temp_map_klienci",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Faktury spprzedazy SH - Copy",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Title",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Nr_FV",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Ilość",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Ilosc",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "JMValue",
-											"type": "String"
-										},
-										"sink": {
-											"name": "JM",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "CenaJednostkowa",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Cena",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 12
-										}
-									},
-									{
-										"source": {
-											"name": "WartośćFvNetto",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Wartosc",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 12
-										}
-									},
-									{
-										"source": {
-											"name": "KlientId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Klient_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "OkresId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Okres_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "NazwaUsługiId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Usluga_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "FakturySprzedazy",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SH_Faktury_Klientow",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "CZYSZCZENIE BUFOROW",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[adf].[CLEAR_OPTIMA_ERP]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]",
-				"[concat(variables('factoryId'), '/datasets/Okresy_obrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/Klienci_SH')]",
-				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]",
-				"[concat(variables('factoryId'), '/datasets/FakturySprzedazy')]",
-				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MAIN-ETL')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "DaneRCPOd",
+						"name": "Lookup1",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -1078,103 +908,27 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
+								"type": "SharePointOnlineListSource",
+								"query": "$top=10&$select=Title",
+								"httpRequestTimeout": "00:05:00"
 							},
 							"dataset": {
-								"referenceName": "DataRCPOd",
+								"referenceName": "Pozycje_zlecen_fakturowania_slownik",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						}
-					},
-					{
-						"name": "Dane finansowe ERP",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "DaneRCPOd",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Okresy obrachunkowe oraz Finanse ERP",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
 					}
 				],
 				"variables": {
-					"dzienTygodnia": {
-						"type": "Boolean",
-						"defaultValue": true
-					},
-					"currentDay": {
+					"zm1": {
 						"type": "String"
 					}
 				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DataRCPOd')]",
-				"[concat(variables('factoryId'), '/pipelines/Okresy obrachunkowe oraz Finanse ERP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MAIN-ETL-TRIGGER')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [
-					"Witold Toczek"
-				],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "MAIN-ETL",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Week",
-						"interval": 1,
-						"startTime": "2021-05-20T13:51:00Z",
-						"timeZone": "UTC",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								9,
-								11,
-								13,
-								15
-							],
-							"weekDays": [
-								"Monday",
-								"Tuesday",
-								"Wednesday",
-								"Thursday",
-								"Friday"
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
+				"[concat(variables('factoryId'), '/datasets/Pozycje_zlecen_fakturowania_slownik')]"
 			]
 		}
 	]

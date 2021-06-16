@@ -1,0 +1,1482 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "TEST-JL1-DATA-FACTORY"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Pobieranie godzin specjalistow')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get pierwszy_dzien_cyklu",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "BI_HOURS_Time_Strat",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT TOP 1 [ID]\n      ,[eHouer]\n      ,[CRM]\n      ,[ERP_Optima]\n      ,[Data_ladowania]\n      ,[eHouer_mc]\n      ,[CRM_mc]\n      ,[ERP_Optima_mc]\n  FROM [dbo].[Config_IncrementDate]\n  where ID = 1",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Config_IncrementDate",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Set pierwszy_dzien_cyklu",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pierwszy_dzien_cyklu",
+							"value": {
+								"value": "@substring(activity('Get pierwszy_dzien_cyklu').output.firstRow.eHouer,0,10)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set ostatni_dzien_cyklu",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "ostatni_dzien_cyklu",
+							"value": {
+								"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Copy eHour to SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Set pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set ostatni_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"additionalHeaders": {
+									"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['hours-hours']"
+										},
+										"sink": {
+											"name": "hours_hours",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"path": "[['project-billable']"
+										},
+										"sink": {
+											"name": "project_billable",
+											"type": "Boolean"
+										}
+									},
+									{
+										"source": {
+											"path": "[['project-name']"
+										},
+										"sink": {
+											"name": "project_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['user-id']"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['hours-approved']"
+										},
+										"sink": {
+											"name": "hours_approved",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['client-name']"
+										},
+										"sink": {
+											"name": "client_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['hours-entry-time']"
+										},
+										"sink": {
+											"name": "hours_entry_time",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['user-user']"
+										},
+										"sink": {
+											"name": "user_user",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['client-code']"
+										},
+										"sink": {
+											"name": "client_code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['daily']"
+										},
+										"sink": {
+											"name": "daily",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['project-code']"
+										},
+										"sink": {
+											"name": "project_code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['project-manager']"
+										},
+										"sink": {
+											"name": "projest_manager",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['client-id']"
+										},
+										"sink": {
+											"name": "client_id",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['data']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "eHour",
+								"type": "DatasetReference",
+								"parameters": {
+									"pierwszy_dzien_cyklu": {
+										"value": "@variables('pierwszy_dzien_cyklu')",
+										"type": "Expression"
+									},
+									"ostatni_dzien_cyklu": {
+										"value": "@variables('ostatni_dzien_cyklu')",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "HOURS_Time",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Kopiowanie_godzin",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "BI_HOURS_Time_Strat",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE ADF.SH_EwidencjaGodzinSpecjalistow"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "SpecjalistaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SpecjalistaId",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "KlientId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "KlientId",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "OkresId",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "RodzajHValue",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Rodzaj h",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Godziny",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Godziny",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "GodzintRcpSpecjalistow",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_EwidencjaGodzin",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "SH_Ewidencja_godzin_STOP",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Kopiowanie_godzin",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SH_Ewidencja_godzin_STOP]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "BI_HOURS_Time_Strat",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[BI_HOURS_Time_Strat]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "SYS_BI_logowanie_v1",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy eHour to SQL",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SYS_BI_logowanie_v1]",
+							"storedProcedureParameters": {
+								"Param": {
+									"value": "1",
+									"type": "Int32"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"variables": {
+					"pierwszy_dzien_cyklu": {
+						"type": "String"
+					},
+					"ostatni_dzien_cyklu": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SH_SYNCHRONIZACJA_KARTOTEK')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Zrzuca dane z SH Klientów do bufora SQL adf.SH_Klienci",
+				"activities": [
+					{
+						"name": "SH_KLIENCI_SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CzyszcenieBuforow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "IDERP",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IDERP",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Waluta",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Waluta",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Sposob_generowania_zleceniaValue",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Sposob_generowania_zleceniaValue",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Jm",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Jm",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Szablon_seria",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Szablon_seria",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "OpiekunId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "OpiekunId",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Forma_platnosci",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Forma_platnosci",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Termin_platnosci",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Termin_platnosci",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "NrSeriiValue",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NrSeriiValue",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Klienci_SH",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ADF_KLIENCI",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "SYNCHRONIZACJA_KARTOTEK",
+						"description": "Wyznaczanie przyrostów do aktualizacji inkrementalnej",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "SH_KLIENCI_SQL",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "SH_USLUGI_SQL",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "SH_SPECJALISCI",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SYNCHRONIZACJA_SH_KARTOTEKI]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GetKlienciDoModyfikacji",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SYNCHRONIZACJA_KARTOTEK",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' AND Kartoteka = 'KLIENT'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Output_rows",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Po klientach do modyfikacji",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetKlienciDoModyfikacji",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetKlienciDoModyfikacji').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Web_klient_modify",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@replace(variables('http_klienci_modyf'), '_XXX_', item().ID)",
+											"type": "Expression"
+										},
+										"method": "PATCH",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+												"type": "Expression"
+											},
+											"content-type": "application/json",
+											"IF-MATCH": "*"
+										},
+										"body": {
+											"value": "@item().text",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "SH_USLUGI_SQL",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CzyszcenieBuforow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Kod_towaru",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kod_towaru",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ID_uslugi",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ID_uslugi",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Opis",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Opis",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Jm",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Jm",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Waluta",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Waluta",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Vat",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Vat",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Aktywny",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "Aktywny",
+											"type": "Boolean",
+											"physicalType": "bit"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Uslugi_SH",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ADF_USLUGI",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "SH_SPECJALISCI",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CzyszcenieBuforow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Title",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "IDCRM",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IDCRM",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TypUmowy",
+											"type": "String"
+										},
+										"sink": {
+											"name": "TypUmowy",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "UslugaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "UslugaId",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "ID_ehour",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ID_ehour",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SH_SPECJALISCI",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ADF_SPAECJALISCI",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Pobierz Token",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
+							"method": "POST",
+							"headers": {
+								"content-type": "application/x-www-form-urlencoded"
+							},
+							"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
+						}
+					},
+					{
+						"name": "GetKlienciNowi",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SYNCHRONIZACJA_KARTOTEK",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' AND Kartoteka = 'KLIENT'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Output_rows",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Po klientach nowych",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetKlienciNowi",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetKlienciNowi').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Web_klient_nowy",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@variables('http_klienci')",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+												"type": "Expression"
+											},
+											"content-type": "application/json",
+											"IF-MATCH": "*"
+										},
+										"body": {
+											"value": "@item().text",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Koniec synchronizacji",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Po klientach do modyfikacji",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Po klientach nowych",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SYNCHRONIZACJA_SH_KONIEC]",
+							"storedProcedureParameters": {
+								"Kartoteka": {
+									"value": "KLIENT",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CzyszcenieBuforow",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Pobierz Token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SYNCHRONIZACJA_SH_CLEAR]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"variables": {
+					"http_klienci_modyf": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items(_XXX_)"
+					},
+					"http_klienci": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/_api/web/lists/getbytitle('Klienci')/items"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MAIN-ETL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Pobieranie danych z CRM",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Okresy  obrachunkowe i finanse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Pobieranie danych CRM",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Pobieranie danych NBP",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Okresy  obrachunkowe i finanse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Pobieranie danych NBP",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Pobieranie godzin specjalistow",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "SH Synchronizacja kartotek",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Pobieranie godzin specjalistow",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Godziny specjalistow do SH",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Obliczanie rentownosci",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Godziny specjalistow do SH",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Obliczanie rentownosci",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Pobieranie danych z CRM",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Pobieranie danych NBP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Pobieranie godzin specjalistow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Obliczanie_rentownosci",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Okresy  obrachunkowe i finanse",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Okresy obrachunkowe oraz Finanse ERP",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SH Synchronizacja kartotek",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Okresy  obrachunkowe i finanse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SH_SYNCHRONIZACJA_KARTOTEK",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"variables": {
+					"dzienTygodnia": {
+						"type": "Boolean",
+						"defaultValue": true
+					},
+					"currentDay": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Pobieranie godzin specjalistow')]",
+				"[concat(variables('factoryId'), '/pipelines/SH_SYNCHRONIZACJA_KARTOTEK')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MAIN-ETL-TRIGGER')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [
+					"Witold Toczek"
+				],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "MAIN-ETL",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2021-05-20T13:51:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								9,
+								11,
+								13,
+								15
+							],
+							"weekDays": [
+								"Monday",
+								"Tuesday",
+								"Wednesday",
+								"Thursday",
+								"Friday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MAIN-ETL')]"
+			]
+		}
+	]
+}

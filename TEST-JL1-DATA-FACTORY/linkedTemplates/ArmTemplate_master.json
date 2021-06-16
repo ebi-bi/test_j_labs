@@ -4,36 +4,52 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Nazwa fabryki danych",
+			"metadata": "Data Factory name",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
 		"J_LABS_BI_connectionString": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
+			"metadata": "Secure string for 'connectionString' of 'J_LABS_BI'"
 		},
 		"J_LABS_BI_password": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
+			"metadata": "Secure string for 'password' of 'J_LABS_BI'"
 		},
 		"SharePoint_JLabs_servicePrincipalKey": {
 			"type": "secureString",
-			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs”"
+			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs'"
+		},
+		"SharePoint_JLabs_ZleceniaFV_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs_ZleceniaFV'"
 		},
 		"J_LABS_BI_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "J-LABS\\witold.toczek.ext"
 		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ehourapp.com/api/v1/report-kv?start=2021-05-01&end=2021-06-30&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME"
+		},
 		"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
 		},
+		"SharePoint_JLabs_ZleceniaFV_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "8f530e7c-b811-4d45-a09f-dd3c20139862"
+		},
+		"eHour_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ehourapp.com/api/v1"
+		},
 		"containerUri": {
 			"type": "string",
-			"metadata": "Identyfikator URI konta magazynu zawierającego połączone szablony usługi ARM"
+			"metadata": "URI to storage account containing linked ARM templates"
 		},
 		"containerSasToken": {
 			"type": "string",
-			"metadata": "Token SAS dla konta magazynu zawierającego połączone szablony usługi ARM"
+			"metadata": "Sas token to storage account containing linked ARM templates"
 		}
 	},
 	"variables": {
@@ -57,14 +73,26 @@
 					"SharePoint_JLabs_servicePrincipalKey": {
 						"value": "[parameters('SharePoint_JLabs_servicePrincipalKey')]"
 					},
+					"SharePoint_JLabs_ZleceniaFV_servicePrincipalKey": {
+						"value": "[parameters('SharePoint_JLabs_ZleceniaFV_servicePrincipalKey')]"
+					},
 					"J_LABS_BI_connectionString": {
 						"value": "[parameters('J_LABS_BI_connectionString')]"
 					},
 					"J_LABS_BI_password": {
 						"value": "[parameters('J_LABS_BI_password')]"
 					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
+					},
 					"SharePoint_JLabs_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('SharePoint_JLabs_properties_typeProperties_servicePrincipalId')]"
+					},
+					"SharePoint_JLabs_ZleceniaFV_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('SharePoint_JLabs_ZleceniaFV_properties_typeProperties_servicePrincipalId')]"
+					},
+					"eHour_properties_typeProperties_url": {
+						"value": "[parameters('eHour_properties_typeProperties_url')]"
 					},
 					"J_LABS_BI_properties_typeProperties_userName": {
 						"value": "[parameters('J_LABS_BI_properties_typeProperties_userName')]"
@@ -72,6 +100,46 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "TEST-JL1-DATA-FACTORY_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'TEST-JL1-DATA-FACTORY_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "TEST-JL1-DATA-FACTORY_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'TEST-JL1-DATA-FACTORY_ArmTemplate_1')]"
+			]
 		}
 	]
 }
