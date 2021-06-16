@@ -18,22 +18,22 @@
 			"recurrence": {
 				"frequency": "Week",
 				"interval": 1,
-				"startTime": "2021-05-20T13:51:00Z",
-				"timeZone": "UTC",
+				"startTime": "2021-05-20T13:51:00",
+				"timeZone": "Central European Standard Time",
 				"schedule": {
 					"minutes": [
 						0
 					],
 					"hours": [
+						8,
+						9,
 						10,
 						11,
 						12,
 						13,
 						14,
-						6,
-						7,
-						8,
-						9
+						15,
+						16
 					],
 					"weekDays": [
 						"Monday",
