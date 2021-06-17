@@ -1436,7 +1436,7 @@
 				"annotations": [
 					"Witold Toczek"
 				],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
