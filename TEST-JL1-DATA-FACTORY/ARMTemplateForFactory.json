@@ -2412,7 +2412,7 @@
 					},
 					"dniDoTylu": {
 						"type": "String",
-						"defaultValue": "7"
+						"defaultValue": "60"
 					},
 					"stawkiSpecjalistow": {
 						"type": "Array"
@@ -5602,7 +5602,7 @@
 				"annotations": [
 					"Witold Toczek"
 				],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
