@@ -672,7 +672,7 @@
 			},
 			"dniDoTylu": {
 				"type": "String",
-				"defaultValue": "60"
+				"defaultValue": "7"
 			},
 			"stawkiSpecjalistow": {
 				"type": "Array"
