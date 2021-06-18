@@ -389,7 +389,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "FirstRoiwList",
+						"activity": "Truncate  SH_GodzinySpecjalistowSlownik",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -650,6 +650,38 @@
 					"value": {
 						"value": "@string(activity('CzyListaPusta').output.firstRow)",
 						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Truncate  SH_GodzinySpecjalistowSlownik",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "FirstRoiwList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ADF__GodznySpecjalistowSlownik",
+						"type": "DatasetReference"
 					}
 				}
 			}
