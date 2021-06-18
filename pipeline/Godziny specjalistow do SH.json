@@ -675,7 +675,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik",
+						"sqlReaderQuery": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik\n\nselect top 1 * from ADF.SH_GodzinySpecjalistowSlownik",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
