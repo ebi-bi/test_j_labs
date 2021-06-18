@@ -1,0 +1,723 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "TEST-JL1-DATA-FACTORY"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Godziny specjalistow do SH')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Pobierz Token",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://accounts.accesscontrol.windows.net/b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8/tokens/OAuth/2",
+							"method": "POST",
+							"headers": {
+								"content-type": "application/x-www-form-urlencoded"
+							},
+							"body": "grant_type=client_credentials&client_id=8f530e7c-b811-4d45-a09f-dd3c20139862@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8&response_type=JSON&client_secret=~dH3_A~F2M4z9X~NpauDuUT-2gr1hsAlHZ&resource=00000003-0000-0ff1-ce00-000000000000/jlabspl.sharepoint.com@b7fab65a-6bbd-48da-8a05-2cd2cfea2dd8"
+						}
+					},
+					{
+						"name": "GetGodzinyDoUsuniecia",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SYNCHRO_GODZINY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'D' AND Kartoteka = 'GODZINY'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Output_rows",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "PoPozycjachDoUIsuniecia",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetGodzinyDoUsuniecia",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetGodzinyDoUsuniecia').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Web_pozycjaRCP_usun",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@replace(variables('http_rcp_items'), '_XXX_', item().ID)",
+											"type": "Expression"
+										},
+										"method": "DELETE",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+												"type": "Expression"
+											},
+											"content-type": "application/json",
+											"IF-MATCH": "*"
+										},
+										"body": {
+											"value": "@item().text",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "PoPozycjachDoModyfikacji",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetGodzinyDoModyfikacji",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetGodzinyDoModyfikacji').output.value\n",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Web_pozycjaRCP_modyfikacja",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@replace(variables('http_rcp_items'), '_XXX_', item().ID)",
+											"type": "Expression"
+										},
+										"method": "PATCH",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+												"type": "Expression"
+											},
+											"content-type": "application/json",
+											"IF-MATCH": "*"
+										},
+										"body": {
+											"value": "@item().text",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "GetGodzinyDoModyfikacji",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SYNCHRO_GODZINY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'M' AND Kartoteka = 'GODZINY'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Output_rows",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "SYNCHRO_GODZINY",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "JesliListaPusta",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SYNCHRONIZACJA_SH_GODZINY_SPECJALISTOW]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "KoniecProcesu",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "PoPozycjachDoUIsuniecia",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "PoPozycjachDoModyfikacji",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "PoPozycjachDoWstawienia",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[SYNCHRONIZACJA_SH_KONIEC]",
+							"storedProcedureParameters": {
+								"Kartoteka": {
+									"value": "GODZINY",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "GetGodzinyDoWstawienia",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SYNCHRO_GODZINY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT  ID, text\nFROM  adf.output_rows WHERE Delta = 'I' AND Kartoteka = 'GODZINY'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Output_rows",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "PoPozycjachDoWstawienia",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetGodzinyDoWstawienia",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetGodzinyDoWstawienia').output.value\n",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Web_pozycjaRCP_wstaw",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "@variables('http_godzin')",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Bearer ', activity('Pobierz Token').output.access_token)}",
+												"type": "Expression"
+											},
+											"content-type": "application/json",
+											"IF-MATCH": "*"
+										},
+										"body": {
+											"value": "@item().text",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "CzyListaPusta",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Pobierz Token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"query": "$top=1",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"dataset": {
+								"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+								"type": "DatasetReference"
+							}
+						}
+					},
+					{
+						"name": "JesliListaPusta",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Truncate  SH_GodzinySpecjalistowSlownik",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@contains(variables('FirstRowList'),'{}')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "SH_GodzinySpecjaistow",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SharePointOnlineListSource",
+											"httpRequestTimeout": "00:05:00"
+										},
+										"sink": {
+											"type": "SqlServerSink",
+											"preCopyScript": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "Identyfikator",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "ID",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Tytuł",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Title",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "OkresId",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "OkresId",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "SpecjalistaId",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "SpecjalistaId",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "KlienciId",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "KlienciId",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Projekt_ehouers",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Projekt_ehouers",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Typ_projektu",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Typ_projektu",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Klient_ehouers",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Klient_ehouers",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "OddzialId",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "OddzialId",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Waluta",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Waluta",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Godziny",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Godziny",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 4,
+														"precision": 20
+													}
+												},
+												{
+													"source": {
+														"name": "Przychod",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Przychod",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 7,
+														"precision": 38
+													}
+												},
+												{
+													"source": {
+														"name": "User_ID",
+														"type": "String"
+													},
+													"sink": {
+														"name": "User_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Kartoteka_uslugId",
+														"type": "Int32"
+													},
+													"sink": {
+														"name": "Kartoteka_uslugId",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "ID_erp",
+														"type": "String"
+													},
+													"sink": {
+														"name": "ID_ERP",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Suma_netto_pln",
+														"type": "Double"
+													},
+													"sink": {
+														"name": "Suma_netto_pln",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 4,
+														"precision": 20
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ADF__GodznySpecjalistowSlownik",
+											"type": "DatasetReference"
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "FirstRoiwList",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "CzyListaPusta",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "FirstRowList",
+							"value": {
+								"value": "@string(activity('CzyListaPusta').output.firstRow)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Truncate  SH_GodzinySpecjalistowSlownik",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "FirstRoiwList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "TRUNCATE TABLE ADF.SH_GodzinySpecjalistowSlownik\n\nselect top 1 * from ADF.SH_GodzinySpecjalistowSlownik",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ADF__GodznySpecjalistowSlownik",
+								"type": "DatasetReference"
+							}
+						}
+					}
+				],
+				"variables": {
+					"http_godzin": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items"
+					},
+					"http_rcp_items": {
+						"type": "String",
+						"defaultValue": "https://jlabspl.sharepoint.com/sites/PowerBI/Tst_TimeCard_Invoice/_api/web/lists/getbytitle('Pozycje_zlecenia slownik')/items(_XXX_)"
+					},
+					"FirstRowList": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
