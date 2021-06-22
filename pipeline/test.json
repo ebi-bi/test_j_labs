@@ -225,7 +225,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
+						"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientId/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
 						"type": "Expression"
 					},
 					"method": "GET",
@@ -252,7 +252,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
+						"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientSecret/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
 						"type": "Expression"
 					},
 					"method": "GET",
@@ -281,7 +281,7 @@
 			},
 			"KeyVaultDNSName": {
 				"type": "string",
-				"defaultValue": "https://optimadevtestlab14902.vault.azure.net/t"
+				"defaultValue": "https://optimadevtestlab14902.vault.azure.net/"
 			},
 			"workspaceGuid": {
 				"type": "string"
