@@ -1,0 +1,57 @@
+{
+	"name": "SH_KosztyPracodwacyUOP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane w bazie BI SQL"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Miesiac",
+				"type": "nchar"
+			},
+			{
+				"name": "ID_specjalisty",
+				"type": "nchar"
+			},
+			{
+				"name": "KosztPracodwacy",
+				"type": "decimal",
+				"precision": 14,
+				"scale": 2
+			},
+			{
+				"name": "Data_ladowania",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Kwota_netto",
+				"type": "decimal",
+				"precision": 14,
+				"scale": 2
+			},
+			{
+				"name": "Kwota_brutto",
+				"type": "decimal",
+				"precision": 14,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SH_KosztyPracodwacyUOP"
+		}
+	}
+}
