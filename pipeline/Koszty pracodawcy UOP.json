@@ -21,7 +21,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "truncate table [adf].[SH_KosztyPracodwacyUOP]"
+						"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
 					},
 					"enableStaging": false,
 					"translator": {
