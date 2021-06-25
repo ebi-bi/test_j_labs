@@ -13,6 +13,1009 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Koszty pracodawcy UOP')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy SH_KosztyPracodwacyUOP",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "Miesiac",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpecjalistaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID_specjalisty",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "KosztPracodawcy",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "KosztPracodwacy",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaNetto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_netto",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaBrutto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_brutto",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "KosztyPracodawcyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Update SH_KosztyPracodwacyUOP",
+						"description": "",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Copy SH_KosztyPracodwacyUOP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Okresy obrachunkowe oraz Finanse ERP')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
+				"activities": [
+					{
+						"name": "Ekstrakcja danych z ERP-Optima",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "OkresyObrachunkowe_copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Mapowanie klientow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Faktury spprzedazy SH - Copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[Load_OPTIMA_ERP]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "OkresyObrachunkowe_copy",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Miesiac",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "StatusOtwartyZamknięty",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "Otwarte?",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "GodzinyNormatywne",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Godziny_normatywne",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Korekta_stawki_APO",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Korekta_stawki_APO",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 10
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Okresy_obrachunkowe",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_OkresyObrachunkowe",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Mapowanie klientow",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "IDERP",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ERP_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Klienci_SH",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "temp_map_klienci",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Faktury spprzedazy SH - Copy",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Title",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Nr_FV",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ilość",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Ilosc",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "JMValue",
+											"type": "String"
+										},
+										"sink": {
+											"name": "JM",
+											"type": "String",
+											"physicalType": "nchar"
+										}
+									},
+									{
+										"source": {
+											"name": "CenaJednostkowa",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Cena",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 12
+										}
+									},
+									{
+										"source": {
+											"name": "WartośćFvNetto",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "Wartosc",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 12
+										}
+									},
+									{
+										"source": {
+											"name": "KlientId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Klient_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Okres_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "NazwaUsługiId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "SH_Usluga_ID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FakturySprzedazy",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_Faktury_Klientow",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "CZYSZCZENIE BUFOROW",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[adf].[CLEAR_OPTIMA_ERP]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Copy SH_KosztyPracodwacyUOP",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "Miesiac",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpecjalistaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID_specjalisty",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "KosztPracodawcy",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "KosztPracodwacy",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaNetto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_netto",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaBrutto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_brutto",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "KosztyPracodawcyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Update SH_KosztyPracodwacyUOP",
+						"description": "",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "OkresyObrachunkowe_copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy SH_KosztyPracodwacyUOP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Pobieranie danych eHour_old')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get pierwszy_dzien_cyklu",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT TOP 1 [ID]\n      ,[eHouer]\n      ,[CRM]\n      ,[ERP_Optima]\n      ,[Data_ladowania]\n      ,[eHouer_mc]\n      ,[CRM_mc]\n      ,[ERP_Optima_mc]\n  FROM [dbo].[Config_IncrementDate]\n  where ID = 1",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Config_IncrementDate",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Set pierwszy_dzien_cyklu",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pierwszy_dzien_cyklu",
+							"value": {
+								"value": "@substring(activity('Get pierwszy_dzien_cyklu').output.firstRow.eHouer,0,10)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "BI_HOURS_Time_Strat",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Set pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set liczony_dzien_temp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[BI_HOURS_Time_Strat]"
+						},
+						"linkedServiceName": {
+							"referenceName": "J_LABS_BI",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Set liczony_dzien_temp",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "liczony_dzien_temp",
+							"value": {
+								"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Single days",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "BI_HOURS_Time_Strat",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('pierwszy_dzien_cyklu'), variables('liczony_dzien'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Set liczony_dzien",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "liczony_dzien",
+										"value": {
+											"value": "@addDays(variables('liczony_dzien_temp'),-1,'yyyy-MM-dd')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set new  liczony_dzien_temp",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set liczony_dzien",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "liczony_dzien_temp",
+										"value": {
+											"value": "@variables('liczony_dzien')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Get data eHour",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Set new  liczony_dzien_temp",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://ehourapp.com/api/v1/report?start=@{variables('liczony_dzien')}&end=@{variables('liczony_dzien')}&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
+											"type": "Expression"
+										},
+										"method": "GET",
+										"headers": {
+											"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+										}
+									}
+								},
+								{
+									"name": "Set godziny",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get data eHour",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "godziny",
+										"value": {
+											"value": "@activity('Get data eHour').output.data",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Hours_Time_Refresh",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Set godziny",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[adf].[Hours_Time_Refresh]",
+										"storedProcedureParameters": {
+											"godziny": {
+												"value": {
+													"value": "@string(variables('godziny'))",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "J_LABS_BI",
+										"type": "LinkedServiceReference"
+									}
+								}
+							],
+							"timeout": "7.00:00:00"
+						}
+					},
+					{
+						"name": "Get data eHour_copy1",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Set liczony_dzien_temp",
+								"dependencyConditions": [
+									"Skipped"
+								]
+							},
+							{
+								"activity": "Set pierwszy_dzien_cyklu",
+								"dependencyConditions": [
+									"Skipped"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "https://ehourapp.com/api/v1/report?start=@{variables('pierwszy_dzien_cyklu')}&end=@{variables('liczony_dzien')}&since=1622460080&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {
+								"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
+							}
+						}
+					}
+				],
+				"variables": {
+					"pierwszy_dzien_cyklu": {
+						"type": "String"
+					},
+					"liczony_dzien": {
+						"type": "String"
+					},
+					"godziny": {
+						"type": "Array"
+					},
+					"liczony_dzien_temp": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Pobieranie godzin specjalistow')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1425,6 +2428,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/Pobieranie godzin specjalistow')]",
+				"[concat(variables('factoryId'), '/pipelines/Okresy obrachunkowe oraz Finanse ERP')]",
 				"[concat(variables('factoryId'), '/pipelines/SH_SYNCHRONIZACJA_KARTOTEK')]"
 			]
 		},

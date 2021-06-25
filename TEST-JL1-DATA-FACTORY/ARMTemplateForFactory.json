@@ -1144,6 +1144,157 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Koszty pracodawcy UOP')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy SH_KosztyPracodwacyUOP",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "Miesiac",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpecjalistaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID_specjalisty",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "KosztPracodawcy",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "KosztPracodwacy",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaNetto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_netto",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaBrutto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_brutto",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "KosztyPracodawcyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Update SH_KosztyPracodwacyUOP",
+						"description": "",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Copy SH_KosztyPracodwacyUOP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/KosztyPracodawcyUOP')]",
+				"[concat(variables('factoryId'), '/datasets/SH_KosztyPracodwacyUOP')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MAIN-ETL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1755,6 +1906,156 @@
 							"referenceName": "J_LABS_BI",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Copy SH_KosztyPracodwacyUOP",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CZYSZCZENIE BUFOROW",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "OkresId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "Miesiac",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "SpecjalistaId",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "ID_specjalisty",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "KosztPracodawcy",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "KosztPracodwacy",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaNetto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_netto",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "KwotaBrutto",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Kwota_brutto",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "KosztyPracodawcyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Update SH_KosztyPracodwacyUOP",
+						"description": "",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "OkresyObrachunkowe_copy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy SH_KosztyPracodwacyUOP",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SH_KosztyPracodwacyUOP",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
 					}
 				],
 				"annotations": []
@@ -1766,7 +2067,9 @@
 				"[concat(variables('factoryId'), '/datasets/Klienci_SH')]",
 				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]",
 				"[concat(variables('factoryId'), '/datasets/FakturySprzedazy')]",
-				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]"
+				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]",
+				"[concat(variables('factoryId'), '/datasets/KosztyPracodawcyUOP')]",
+				"[concat(variables('factoryId'), '/datasets/SH_KosztyPracodwacyUOP')]"
 			]
 		},
 		{
@@ -4525,7 +4828,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientId/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
 								"type": "Expression"
 							},
 							"method": "GET",
@@ -4553,7 +4856,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientSecret/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
 								"type": "Expression"
 							},
 							"method": "GET",
@@ -4583,7 +4886,7 @@
 					},
 					"KeyVaultDNSName": {
 						"type": "string",
-						"defaultValue": "https://optimadevtestlab14902.vault.azure.net/t"
+						"defaultValue": "https://optimadevtestlab14902.vault.azure.net/"
 					},
 					"workspaceGuid": {
 						"type": "string"
@@ -5136,6 +5439,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/KosztyPracodawcyUOP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "KosztyPracodawcyUOP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Okresy_obrachunkowe')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5336,6 +5662,68 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "SH_FakturySprzedazy"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/J_LABS_BI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SH_KosztyPracodwacyUOP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane w bazie BI SQL"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Miesiac",
+						"type": "nchar"
+					},
+					{
+						"name": "ID_specjalisty",
+						"type": "nchar"
+					},
+					{
+						"name": "KosztPracodwacy",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					},
+					{
+						"name": "Data_ladowania",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Kwota_netto",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					},
+					{
+						"name": "Kwota_brutto",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SH_KosztyPracodwacyUOP"
 				}
 			},
 			"dependsOn": [

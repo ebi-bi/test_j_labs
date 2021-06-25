@@ -391,7 +391,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientId/',pipeline().parameters.SecretName_SPClientId,'/?api-version=7.0')",
 								"type": "Expression"
 							},
 							"method": "GET",
@@ -419,7 +419,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"url": {
-								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
+								"value": "@concat(pipeline().parameters.KeyVaultDNSName,'secrets/','ClientSecret/',pipeline().parameters.SecretName_SPSecret,'/?api-version=7.0')",
 								"type": "Expression"
 							},
 							"method": "GET",
@@ -449,7 +449,7 @@
 					},
 					"KeyVaultDNSName": {
 						"type": "string",
-						"defaultValue": "https://optimadevtestlab14902.vault.azure.net/t"
+						"defaultValue": "https://optimadevtestlab14902.vault.azure.net/"
 					},
 					"workspaceGuid": {
 						"type": "string"
@@ -715,6 +715,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/KosztyPracodawcyUOP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SharePoint_JLabs",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane z list Share Point"
+				},
+				"annotations": [],
+				"type": "SharePointOnlineListResource",
+				"schema": [],
+				"typeProperties": {
+					"listName": "KosztyPracodawcyUOP"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SharePoint_JLabs')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Okresy_obrachunkowe')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -886,49 +909,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/SQLIntegracjaTEST')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DO_SH')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"query": "$top=10&$select=Title",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"dataset": {
-								"referenceName": "Pozycje_zlecen_fakturowania_slownik",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					}
-				],
-				"variables": {
-					"zm1": {
-						"type": "String"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Pozycje_zlecen_fakturowania_slownik')]"
 			]
 		}
 	]

@@ -13,6 +13,47 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DO_SH')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SharePointOnlineListSource",
+								"query": "$top=10&$select=Title",
+								"httpRequestTimeout": "00:05:00"
+							},
+							"dataset": {
+								"referenceName": "Pozycje_zlecen_fakturowania_slownik",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"variables": {
+					"zm1": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Obliczanie_rentownosci')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1421,6 +1462,66 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SH_KosztyPracodwacyUOP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dane w bazie BI SQL"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Miesiac",
+						"type": "nchar"
+					},
+					{
+						"name": "ID_specjalisty",
+						"type": "nchar"
+					},
+					{
+						"name": "KosztPracodwacy",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					},
+					{
+						"name": "Data_ladowania",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Kwota_netto",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					},
+					{
+						"name": "Kwota_brutto",
+						"type": "decimal",
+						"precision": 14,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SH_KosztyPracodwacyUOP"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SH_OkresyObrachunkowe')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2549,717 +2650,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Output_rows')]",
 				"[concat(variables('factoryId'), '/datasets/ADF__GodznySpecjalistowSlownik')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Okresy obrachunkowe oraz Finanse ERP')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Wywołanie procedury przenoszącej dane z ERP/Optima i wypełniającej tabele faktur.",
-				"activities": [
-					{
-						"name": "Ekstrakcja danych z ERP-Optima",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "OkresyObrachunkowe_copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Mapowanie klientow",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Faktury spprzedazy SH - Copy",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[adf].[Load_OPTIMA_ERP]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "OkresyObrachunkowe_copy",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Id",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "ID",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Title",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Miesiac",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "StatusOtwartyZamknięty",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "Otwarte?",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "GodzinyNormatywne",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Godziny_normatywne",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "Korekta_stawki_APO",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Korekta_stawki_APO",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 10
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Okresy_obrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SH_OkresyObrachunkowe",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Mapowanie klientow",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Id",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "IDERP",
-											"type": "String"
-										},
-										"sink": {
-											"name": "ERP_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Klienci_SH",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "temp_map_klienci",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Faktury spprzedazy SH - Copy",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CZYSZCZENIE BUFOROW",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SharePointOnlineListSource",
-								"httpRequestTimeout": "00:05:00"
-							},
-							"sink": {
-								"type": "SqlServerSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Title",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Nr_FV",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Ilość",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Ilosc",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "JMValue",
-											"type": "String"
-										},
-										"sink": {
-											"name": "JM",
-											"type": "String",
-											"physicalType": "nchar"
-										}
-									},
-									{
-										"source": {
-											"name": "CenaJednostkowa",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Cena",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 12
-										}
-									},
-									{
-										"source": {
-											"name": "WartośćFvNetto",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "Wartosc",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 2,
-											"precision": 12
-										}
-									},
-									{
-										"source": {
-											"name": "KlientId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Klient_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "OkresId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Okres_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "NazwaUsługiId",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "SH_Usluga_ID",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "FakturySprzedazy",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SH_Faktury_Klientow",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "CZYSZCZENIE BUFOROW",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[adf].[CLEAR_OPTIMA_ERP]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SH_OkresyObrachunkowe')]",
-				"[concat(variables('factoryId'), '/datasets/temp_map_klienci')]",
-				"[concat(variables('factoryId'), '/datasets/SH_Faktury_Klientow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Pobieranie danych eHour_old')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get pierwszy_dzien_cyklu",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": "SELECT TOP 1 [ID]\n      ,[eHouer]\n      ,[CRM]\n      ,[ERP_Optima]\n      ,[Data_ladowania]\n      ,[eHouer_mc]\n      ,[CRM_mc]\n      ,[ERP_Optima_mc]\n  FROM [dbo].[Config_IncrementDate]\n  where ID = 1",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "Config_IncrementDate",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "Set pierwszy_dzien_cyklu",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get pierwszy_dzien_cyklu",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "pierwszy_dzien_cyklu",
-							"value": {
-								"value": "@substring(activity('Get pierwszy_dzien_cyklu').output.firstRow.eHouer,0,10)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "BI_HOURS_Time_Strat",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "Set pierwszy_dzien_cyklu",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set liczony_dzien_temp",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[BI_HOURS_Time_Strat]"
-						},
-						"linkedServiceName": {
-							"referenceName": "J_LABS_BI",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Set liczony_dzien_temp",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get pierwszy_dzien_cyklu",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "liczony_dzien_temp",
-							"value": {
-								"value": "@addDays(startOfMonth(getFutureTime(1,'Month','yyyy-MM-dd')),-1,'yyyy-MM-dd')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Single days",
-						"type": "Until",
-						"dependsOn": [
-							{
-								"activity": "BI_HOURS_Time_Strat",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@equals(variables('pierwszy_dzien_cyklu'), variables('liczony_dzien'))",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Set liczony_dzien",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "liczony_dzien",
-										"value": {
-											"value": "@addDays(variables('liczony_dzien_temp'),-1,'yyyy-MM-dd')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set new  liczony_dzien_temp",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set liczony_dzien",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "liczony_dzien_temp",
-										"value": {
-											"value": "@variables('liczony_dzien')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Get data eHour",
-									"type": "WebActivity",
-									"dependsOn": [
-										{
-											"activity": "Set new  liczony_dzien_temp",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"url": {
-											"value": "https://ehourapp.com/api/v1/report?start=@{variables('liczony_dzien')}&end=@{variables('liczony_dzien')}&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
-											"type": "Expression"
-										},
-										"method": "GET",
-										"headers": {
-											"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
-										}
-									}
-								},
-								{
-									"name": "Set godziny",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Get data eHour",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "godziny",
-										"value": {
-											"value": "@activity('Get data eHour').output.data",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Hours_Time_Refresh",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "Set godziny",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[adf].[Hours_Time_Refresh]",
-										"storedProcedureParameters": {
-											"godziny": {
-												"value": {
-													"value": "@string(variables('godziny'))",
-													"type": "Expression"
-												},
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "J_LABS_BI",
-										"type": "LinkedServiceReference"
-									}
-								}
-							],
-							"timeout": "7.00:00:00"
-						}
-					},
-					{
-						"name": "Get data eHour_copy1",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Set liczony_dzien_temp",
-								"dependencyConditions": [
-									"Skipped"
-								]
-							},
-							{
-								"activity": "Set pierwszy_dzien_cyklu",
-								"dependencyConditions": [
-									"Skipped"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "https://ehourapp.com/api/v1/report?start=@{variables('pierwszy_dzien_cyklu')}&end=@{variables('liczony_dzien')}&since=1622460080&page=1&columns=CLIENT_ID%2CCLIENT_CODE%2CCLIENT_NAME%2CPROJECT_NAME%2CPROJECT_CODE%2CPROJECT_BILLABLE%2CPROJECT_MANAGER%2CUSER_ID%2CUSER_USER%2CHOURS_HOURS%2CHOURS_APPROVED%2CASSIGNMENT_START%2CASSIGNMENT_END%2CHOURS_ENTRY_TIME",
-								"type": "Expression"
-							},
-							"method": "GET",
-							"headers": {
-								"X-API-Key": "MjJkOWNhOWMtODkwYS00ZTJlLTgyYTYtYmY3NWViMDA4MjJi"
-							}
-						}
-					}
-				],
-				"variables": {
-					"pierwszy_dzien_cyklu": {
-						"type": "String"
-					},
-					"liczony_dzien": {
-						"type": "String"
-					},
-					"godziny": {
-						"type": "Array"
-					},
-					"liczony_dzien_temp": {
-						"type": "String"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Config_IncrementDate')]"
 			]
 		}
 	]
