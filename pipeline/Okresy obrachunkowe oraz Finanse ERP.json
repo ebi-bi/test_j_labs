@@ -499,7 +499,7 @@
 			},
 			{
 				"name": "Update SH_KosztyPracodwacyUOP",
-				"description": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+				"description": "",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -522,7 +522,19 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "  update dbo.SH_KosztyPracodwacyUOP \n  set SH_KosztyPracodwacyUOP.Miesiac = o.Miesiac,\n\tSH_KosztyPracodwacyUOP.ID_specjalisty = s.Title\n  from dbo.[SH_KosztyPracodwacyUOP] uop\n  left join [adf].[SH_SPECJALISTA] s\n  on uop.ID_specjalisty = s.ID\n  left join [dbo].[SH_Okres_obrachunkowy] o\n  on o.ID = uop.Miesiac\n  where s.Title is not null and o.Miesiac is not null\n\n  select 'ok' as result",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SH_KosztyPracodwacyUOP",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"annotations": []
