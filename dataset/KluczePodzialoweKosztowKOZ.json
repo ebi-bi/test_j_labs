@@ -1,0 +1,15 @@
+{
+	"name": "KluczePodzialoweKosztowKOZ",
+	"properties": {
+		"folder": {
+			"name": "Dane z list Share Point"
+		},
+		"annotations": [],
+		"type": "SharePointOnlineListResource",
+		"schema": [],
+		"typeProperties": {
+			"listName": "KluczePodziałoweKosztówOgólnych"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

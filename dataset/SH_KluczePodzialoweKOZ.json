@@ -1,0 +1,65 @@
+{
+	"name": "SH_KluczePodzialoweKOZ",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane w bazie BI SQL"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Okres",
+				"type": "nchar"
+			},
+			{
+				"name": "Rodzaj_klucza",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Warszawa",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Krakow",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "APO",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Warszawa_value",
+				"type": "nchar"
+			},
+			{
+				"name": "Krakow_value",
+				"type": "nchar"
+			},
+			{
+				"name": "APO_value",
+				"type": "nchar"
+			},
+			{
+				"name": "Data_ladowania",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SH_KluczePodziałoweKOZ"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
