@@ -4,24 +4,24 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Data Factory name",
+			"metadata": "Nazwa fabryki danych",
 			"defaultValue": "TEST-JL1-DATA-FACTORY"
 		},
 		"SharePoint_JLabs_servicePrincipalKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs'"
+			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs”"
 		},
 		"SharePoint_JLabs_ZleceniaFV_servicePrincipalKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'SharePoint_JLabs_ZleceniaFV'"
+			"metadata": "Bezpieczny ciąg dla elementu „servicePrincipalKey” — „SharePoint_JLabs_ZleceniaFV”"
 		},
 		"J_LABS_BI_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'J_LABS_BI'"
+			"metadata": "Bezpieczny ciąg dla elementu „connectionString” — „J_LABS_BI”"
 		},
 		"J_LABS_BI_password": {
 			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'J_LABS_BI'"
+			"metadata": "Bezpieczny ciąg dla elementu „password” — „J_LABS_BI”"
 		},
 		"RestService1_properties_typeProperties_url": {
 			"type": "string",
