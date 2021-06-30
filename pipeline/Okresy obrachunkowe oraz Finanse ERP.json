@@ -36,6 +36,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "COPY Specjalisci JLT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -674,7 +680,14 @@
 			{
 				"name": "COPY Specjalisci JLT",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "CZYSZCZENIE BUFOROW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -697,35 +710,35 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "ContentTypeID",
-									"type": "String"
+									"name": "SpecjalistaId",
+									"type": "Int32"
 								},
 								"sink": {
-									"name": "Okres_od",
-									"type": "String",
-									"physicalType": "nchar"
+									"name": "SpecjalistaID",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "Title",
-									"type": "String"
+									"name": "OkresWażnościOdId",
+									"type": "Int32"
 								},
 								"sink": {
-									"name": "ID_specjalisty",
-									"type": "String",
-									"physicalType": "nchar"
+									"name": "OkresWaznosciOdID",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "ComplianceAssetId",
+									"name": "OkresWażnościDo",
 									"type": "String"
 								},
 								"sink": {
-									"name": "Data_ladowania",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"name": "OkresWaznosciDo",
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							}
 						],
