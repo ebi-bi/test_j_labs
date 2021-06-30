@@ -27,7 +27,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "dbo",
+			"schema": "adf",
 			"table": "SH_Specjalisci_JLT"
 		}
 	}
