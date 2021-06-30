@@ -1,6 +1,10 @@
 {
 	"name": "KluczePodzialoweKosztowKOZ",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SharePoint_JLabs",
+			"type": "LinkedServiceReference"
+		},
 		"folder": {
 			"name": "Dane z list Share Point"
 		},

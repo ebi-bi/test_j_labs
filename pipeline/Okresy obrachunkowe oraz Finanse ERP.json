@@ -24,6 +24,18 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Update SH_KosztyPracodwacyUOP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Klucze podzialowe kosztow KOZ Logika",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -414,8 +426,7 @@
 						"httpRequestTimeout": "00:05:00"
 					},
 					"sink": {
-						"type": "SqlServerSink",
-						"preCopyScript": "truncate table [dbo].[SH_KosztyPracodwacyUOP]"
+						"type": "SqlServerSink"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -535,8 +546,134 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "COPY Klucze podzialowe KOZ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CZYSZCZENIE BUFOROW",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SharePointOnlineListSource",
+						"httpRequestTimeout": "00:05:00"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "RodzajKluczaPodziałowegoValue",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Rodzaj_klucza",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Warszawa",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Warszawa_value",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Kraków",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "Krakow_value",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "APO",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "APO_value",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OkresRozliczeniowyId",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "OkresRozliczeniowyID",
+									"type": "Int32"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "KluczePodzialoweKosztowKOZ",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SH_KluczePodzialoweKOZ",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Klucze podzialowe kosztow KOZ Logika",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "COPY Klucze podzialowe KOZ",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SH_KluczePodzialoweKOZ_STOP]"
+				},
+				"linkedServiceName": {
+					"referenceName": "J_LABS_BI",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2021-06-28T12:42:06Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }
