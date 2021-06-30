@@ -1,0 +1,34 @@
+{
+	"name": "SH_Specjalisci_JLT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "J_LABS_BI",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dane pomocnicze"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Okres_od",
+				"type": "nchar"
+			},
+			{
+				"name": "ID_specjalisty",
+				"type": "nchar"
+			},
+			{
+				"name": "Data_ladowania",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SH_Specjalisci_JLT"
+		}
+	}
+}
